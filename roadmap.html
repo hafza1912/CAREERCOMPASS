@@ -6,107 +6,280 @@
   <title>CareerCompass – Interactive Roadmap</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{--primary:#059669;--primary-dark:#047857;--primary-light:#ecfdf5;--primary-mid:#d1fae5;--sidebar-bg:#064e3b;--bg:#f9fafb;--surface:#fff;--border:#e5e7eb;--border-green:#d1fae5;--text:#1a1a1a;--text2:#6b7280;--topbar-bg:#fff;}
-    [data-theme="dark"]{--primary:#34d399;--primary-dark:#059669;--primary-light:#0d2818;--primary-mid:#1e4033;--sidebar-bg:#0f1320;--bg:#0a0d14;--surface:#0f1320;--border:#1e2433;--border-green:#1e4033;--text:#e2e8f0;--text2:#64748b;--topbar-bg:#0f1320;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
+    /* =========================================================
+       1. COLOR SYSTEM & CSS VARIABLES
+       ========================================================= */
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #ecfdf5;
+      --primary-mid: #d1fae5;
+      --sidebar-bg: #064e3b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-green: #d1fae5;
+      --text: #0f172a;
+      --text2: #64748b;
+      --topbar-bg: #ffffff;
 
-    /* SIDEBAR */
-    .sidebar{width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
-    .sidebar-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0;}
-    .sidebar-logo span{color:#fff;}
-    .sidebar-scroll{flex:1;overflow-y:auto;padding:8px 10px;scrollbar-width:none;}
-    .sidebar-scroll::-webkit-scrollbar{display:none;}
-    .sidebar-section-label{font-size:0.62rem;font-weight:700;color:#6ee7b7;text-transform:uppercase;letter-spacing:1px;padding:10px 12px 4px;opacity:0.75;}
-    .sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0 0 4px;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:#a7f3d0;text-decoration:none;font-size:0.83rem;font-weight:500;transition:all 0.2s;white-space:nowrap;}
-    .nav-item:hover{background:rgba(255,255,255,0.1);color:#fff;}
-    .nav-item.active{background:#059669;color:#fff;font-weight:700;}
-    .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
-    .nav-divider{height:1px;background:rgba(255,255,255,0.08);margin:6px 10px;}
-    .sidebar-bottom{padding:10px 10px 12px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;background:var(--sidebar-bg);}
-    .sidebar-profile{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.07);cursor:pointer;margin-bottom:8px;transition:background 0.2s;}
-    .sidebar-profile:hover{background:rgba(255,255,255,0.12);}
-    .profile-avatar{width:32px;height:32px;background:linear-gradient(135deg,#059669,#34d399);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:0.9rem;flex-shrink:0;}
-    .profile-name{font-size:0.78rem;font-weight:700;color:#fff;}
-    .profile-level{font-size:0.65rem;color:#6ee7b7;margin-top:1px;}
-    .sidebar-login-btn{width:100%;background:#059669;color:#fff;border:none;padding:9px;border-radius:10px;font-weight:700;font-size:0.78rem;cursor:pointer;transition:background 0.2s;}
-    .sidebar-login-btn:hover{background:#047857;}
-    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;}
-    .sidebar-overlay.open{display:block;}
+      /* High-Contrast Progression Colors */
+      --step1-color: #2563eb; /* Electric Blue */
+      --step1-bg: #eff6ff;
+      --step1-border: #93c5fd;
 
-    /* TOPBAR */
-    .topbar{position:fixed;top:0;left:240px;right:0;height:52px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s;}
-    .topbar-left{display:flex;align-items:center;gap:10px;}
-    .topbar-title{font-weight:700;color:var(--primary);font-size:0.95rem;font-family:'Space Grotesk',sans-serif;}
-    .topbar-sub{font-size:0.72rem;color:var(--text2);}
-    .topbar-right{display:flex;align-items:center;gap:8px;}
-    .topbar-badge{background:var(--primary-light);color:var(--primary);font-size:0.72rem;font-weight:700;padding:5px 10px;border-radius:18px;border:1px solid var(--primary-mid);}
-    .theme-btn{background:none;border:1.5px solid var(--border-green);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-    .theme-btn:hover{background:var(--primary-light);}
-    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
+      --step2-color: #059669; /* Emerald Green */
+      --step2-bg: #ecfdf5;
+      --step2-border: #6ee7b7;
 
-    /* MAIN */
-    .main-content{margin-left:240px;margin-top:52px;flex:1;background:var(--bg);}
-    .page-header{background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));padding:28px 40px 20px;text-align:center;border-bottom:1px solid var(--border-green);}
-    .page-header h1{font-size:1.85rem;font-weight:800;color:var(--text);margin-bottom:7px;font-family:'Space Grotesk',sans-serif;}
-    .page-header p{color:var(--text2);font-size:0.9rem;}
-    .content{padding:24px 32px;max-width:1100px;margin:0 auto;}
+      --step3-color: #d97706; /* Warm Amber */
+      --step3-bg: #fffbeb;
+      --step3-border: #fcd34d;
 
-    /* NODE CARDS */
-    .node-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:10px;}
-    .node-card{background:var(--surface);border:2px solid var(--border-green);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.2s ease;}
-    .node-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 8px 20px rgba(5,150,105,0.1);}
-    .node-card.selected{background:#059669;border-color:#059669;color:#fff;}
-    .node-card.selected .node-name{color:#fff;}
-    .node-card.selected .node-sub{color:#a7f3d0;}
-    .node-icon{font-size:1.8rem;margin-bottom:7px;}
-    .node-name{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:3px;}
-    .node-sub{font-size:0.72rem;color:var(--text2);}
+      --step4-color: #7c3aed; /* Neon Purple */
+      --step4-bg: #f5f3ff;
+      --step4-border: #c4b5fd;
+    }
 
-    /* LEVEL TITLE */
-    .level-title{font-size:0.85rem;font-weight:700;color:var(--text2);margin:20px 0 10px;text-transform:uppercase;letter-spacing:0.5px;}
-    .level-title span{color:var(--primary);}
-    .hidden{display:none;}
+    [data-theme="dark"] {
+      --primary: #34d399;
+      --primary-dark: #059669;
+      --primary-light: #0d2818;
+      --primary-mid: #1e4033;
+      --sidebar-bg: #0f1320;
+      --bg: #090d16;
+      --surface: #0f172a;
+      --border: #1e293b;
+      --border-green: #1e4033;
+      --text: #f8fafc;
+      --text2: #94a3b8;
+      --topbar-bg: #0f172a;
 
-    /* DETAIL PANEL */
-    .detail-panel{background:var(--surface);border:2px solid var(--border-green);border-radius:18px;padding:28px;margin-top:16px;transition:background 0.3s;}
+      /* Dark Theme progression glow colors */
+      --step1-color: #3b82f6;
+      --step1-bg: #1e293b;
+      --step1-border: #2563eb;
 
-    .detail-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border-green);}
-    .detail-emoji{font-size:3rem;flex-shrink:0;}
-    .detail-title{font-size:1.4rem;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:4px;}
-    .detail-sub{font-size:0.85rem;color:var(--text2);}
+      --step2-color: #10b981;
+      --step2-bg: #064e3b;
+      --step2-border: #059669;
 
-    .salary-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-    .salary-chip{background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:10px;padding:8px 14px;text-align:center;}
-    .salary-chip .sc-label{font-size:0.65rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;}
-    .salary-chip .sc-value{font-size:0.95rem;font-weight:800;color:var(--primary);font-family:'Space Grotesk',sans-serif;margin-top:2px;}
+      --step3-color: #f59e0b;
+      --step3-bg: #451a03;
+      --step3-border: #d97706;
 
-    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
-    .detail-section{margin-bottom:18px;}
-    .section-title{font-size:0.75rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-    .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;}
-    .tag{background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);border-radius:8px;padding:4px 10px;font-size:0.75rem;font-weight:600;}
-    .tag.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe;}
-    .tag.purple{background:#ede9fe;color:#7c3aed;border-color:#ddd6fe;}
-    .tag.orange{background:#fef3c7;color:#92400e;border-color:#fde68a;}
-    [data-theme="dark"] .tag.blue{background:#1e3a5f;color:#93c5fd;border-color:#1e40af;}
-    [data-theme="dark"] .tag.purple{background:#2d1b69;color:#c4b5fd;border-color:#4c1d95;}
-    [data-theme="dark"] .tag.orange{background:#3d2800;color:#fcd34d;border-color:#92400e;}
+      --step4-color: #a855f7;
+      --step4-bg: #2e1065;
+      --step4-border: #7c3aed;
+    }
 
-    .steps-list{display:flex;flex-direction:column;gap:8px;}
-    .step-item{display:flex;gap:12px;align-items:flex-start;background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:10px;padding:10px 14px;}
-    .step-num{background:#059669;color:#fff;font-size:0.7rem;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-    .step-text{font-size:0.82rem;color:var(--text);line-height:1.5;}
-    .step-text strong{color:var(--primary);display:block;margin-bottom:1px;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; transition: background 0.3s, color 0.3s; }
 
-    .demand-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:10px;font-size:0.78rem;font-weight:700;}
-    .demand-high{background:#d1fae5;color:#065f46;}
-    .demand-medium{background:#fef3c7;color:#92400e;}
-    .demand-very-high{background:#c7d2fe;color:#3730a3;}
-    [data-theme="dark"] .demand-high{background:#064e3b;color:#34d399;}
-    [data-theme="dark"] .demand-medium{background:#3d2800;color:#fcd34d;}
-    [data-theme="dark"] .demand-very-high{background:#1e1b4b;color:#a5b4fc;}
+    /* =========================================================
+       2. SIDEBAR & TOPBAR
+       ========================================================= */
+    .sidebar { width: 240px; background: var(--sidebar-bg); height: 100vh; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 200; box-shadow: 4px 0 20px rgba(0,0,0,0.15); }
+    .sidebar-logo { padding: 14px 20px 12px; font-size: 1.1rem; font-weight: 800; color: #a7f3d0; font-family: 'Space Grotesk', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: pointer; flex-shrink: 0; }
+    .sidebar-logo span { color: #fff; }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 8px 10px; scrollbar-width: none; }
+    .sidebar-scroll::-webkit-scrollbar { display: none; }
+    .sidebar-section-label { font-size: 0.62rem; font-weight: 700; color: #6ee7b7; text-transform: uppercase; letter-spacing: 1px; padding: 10px 12px 4px; opacity: 0.75; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 0 4px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; color: #a7f3d0; text-decoration: none; font-size: 0.83rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-item.active { background: #059669; color: #fff; font-weight: 700; }
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 10px; }
+    .sidebar-bottom { padding: 10px 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; background: var(--sidebar-bg); }
+    .sidebar-profile { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.07); cursor: pointer; margin-bottom: 8px; transition: background 0.2s; }
+    .sidebar-profile:hover { background: rgba(255,255,255,0.12); }
+    .profile-avatar { width: 32px; height: 32px; background: linear-gradient(135deg,#059669,#34d399); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 0.9rem; flex-shrink: 0; }
+    .profile-name { font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .profile-level { font-size: 0.65rem; color: #6ee7b7; margin-top: 1px; }
+    .sidebar-login-btn { width: 100%; background: #059669; color: #fff; border: none; padding: 9px; border-radius: 10px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; }
+    .sidebar-login-btn:hover { background: #047857; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 150; }
+    .sidebar-overlay.open { display: block; }
+
+    .topbar { position: fixed; top: 0; left: 240px; right: 0; height: 52px; background: var(--topbar-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; box-shadow: 0 1px 8px rgba(0,0,0,0.05); transition: background 0.3s; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-title { font-weight: 700; color: var(--primary); font-size: 0.95rem; font-family: 'Space Grotesk', sans-serif; }
+    .topbar-sub { font-size: 0.72rem; color: var(--text2); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .topbar-badge { background: var(--primary-light); color: var(--primary); font-size: 0.72rem; font-weight: 700; padding: 5px 10px; border-radius: 18px; border: 1px solid var(--primary-mid); }
+    .theme-btn { background: none; border: 1.5px solid var(--border-green); color: var(--text); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .theme-btn:hover { background: var(--primary-light); }
+    .hamburger { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--primary); }
+
+    /* =========================================================
+       3. MAIN LAYOUT & STEP HEADERS WITH VISUAL CONNECTOR LINES
+       ========================================================= */
+    .main-content { margin-left: 240px; margin-top: 52px; flex: 1; background: var(--bg); }
+    .page-header { background: linear-gradient(135deg, var(--primary-light), var(--primary-mid)); padding: 28px 40px 20px; text-align: center; border-bottom: 1px solid var(--border-green); }
+    .page-header h1 { font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 7px; font-family: 'Space Grotesk', sans-serif; }
+    .page-header p { color: var(--text2); font-size: 0.9rem; }
+    .content { padding: 32px; max-width: 1000px; margin: 0 auto; }
+
+    /* CONNECTING STEP CONNECTOR LINES */
+    .step-block { position: relative; }
+    
+    .step-connector-line {
+      width: 4px;
+      height: 36px;
+      margin: 12px auto;
+      border-radius: 4px;
+      transition: all 0.4s ease;
+    }
+
+    #line-1-2 { background: linear-gradient(to bottom, var(--step1-color), var(--step2-color)); }
+    #line-2-3 { background: linear-gradient(to bottom, var(--step2-color), var(--step3-color)); }
+    #line-3-4 { background: linear-gradient(to bottom, var(--step3-color), var(--step4-color)); }
+
+    /* DISTINCT STEP HEADER BADGES */
+    .level-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .level-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    #level-degree .level-header-badge { background: var(--step1-bg); color: var(--step1-color); border: 2px solid var(--step1-border); }
+    #level-degree .level-dot { background: var(--step1-color); box-shadow: 0 0 10px var(--step1-color); }
+
+    #level-dept .level-header-badge { background: var(--step2-bg); color: var(--step2-color); border: 2px solid var(--step2-border); }
+    #level-dept .level-dot { background: var(--step2-color); box-shadow: 0 0 10px var(--step2-color); }
+
+    #level-job .level-header-badge { background: var(--step3-bg); color: var(--step3-color); border: 2px solid var(--step3-border); }
+    #level-job .level-dot { background: var(--step3-color); box-shadow: 0 0 10px var(--step3-color); }
+
+    #level-detail .level-header-badge { background: var(--step4-bg); color: var(--step4-color); border: 2px solid var(--step4-border); }
+    #level-detail .level-dot { background: var(--step4-color); box-shadow: 0 0 10px var(--step4-color); }
+
+    .hidden { display: none; }
+
+    /* =========================================================
+       4. STEP CARDS COLOR SCHEMES
+       ========================================================= */
+    .node-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-top: 6px; }
+    .node-card { background: var(--surface); border-radius: 14px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+    .node-card:hover { transform: translateY(-4px); }
+    
+    .node-icon { font-size: 2rem; margin-bottom: 8px; }
+    .node-name { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .node-sub { font-size: 0.72rem; color: var(--text2); }
+
+    /* STEP 1 CARDS (BLUE) */
+    #level-degree .node-card { border: 2px solid var(--step1-border); border-top: 4px solid var(--step1-color); }
+    #level-degree .node-card:hover { border-color: var(--step1-color); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); }
+    #level-degree .node-card.selected { background: var(--step1-color); border-color: var(--step1-color); color: #fff; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); }
+    #level-degree .node-card.selected .node-name, #level-degree .node-card.selected .node-sub { color: #fff; }
+
+    /* STEP 2 CARDS (GREEN) */
+    #level-dept .node-card { border: 2px solid var(--step2-border); border-top: 4px solid var(--step2-color); }
+    #level-dept .node-card:hover { border-color: var(--step2-color); box-shadow: 0 10px 25px rgba(5, 150, 105, 0.2); }
+    #level-dept .node-card.selected { background: var(--step2-color); border-color: var(--step2-color); color: #fff; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.4); }
+    #level-dept .node-card.selected .node-name, #level-dept .node-card.selected .node-sub { color: #fff; }
+
+    /* STEP 3 CARDS (AMBER) */
+    #level-job .node-card { border: 2px solid var(--step3-border); border-top: 4px solid var(--step3-color); }
+    #level-job .node-card:hover { border-color: var(--step3-color); box-shadow: 0 10px 25px rgba(217, 119, 6, 0.2); }
+    #level-job .node-card.selected { background: var(--step3-color); border-color: var(--step3-color); color: #fff; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); }
+    #level-job .node-card.selected .node-name, #level-job .node-card.selected .node-sub { color: #fff; }
+
+    /* =========================================================
+       5. STEP 4 DETAIL PANEL & ROADMAP STEPS
+       ========================================================= */
+    .detail-panel { 
+      background: var(--surface); 
+      border: 2px solid var(--step4-border); 
+      border-top: 8px solid var(--step4-color);
+      border-radius: 18px; 
+      padding: 28px; 
+      margin-top: 8px; 
+      transition: background 0.3s; 
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.12);
+    }
+
+    .detail-header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .detail-emoji { font-size: 3.2rem; flex-shrink: 0; }
+    .detail-title { font-size: 1.5rem; font-weight: 800; color: var(--text); font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
+    .detail-sub { font-size: 0.85rem; color: var(--text2); }
+
+    .salary-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .salary-chip { background: var(--step4-bg); border: 1px solid var(--step4-border); border-radius: 10px; padding: 8px 14px; text-align: center; }
+    .salary-chip .sc-label { font-size: 0.65rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; }
+    .salary-chip .sc-value { font-size: 0.95rem; font-weight: 800; color: var(--step4-color); font-family: 'Space Grotesk', sans-serif; margin-top: 2px; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+    .detail-section { margin-bottom: 18px; }
+    .section-title { font-size: 0.78rem; font-weight: 800; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    
+    .tag { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-mid); border-radius: 8px; padding: 5px 12px; font-size: 0.75rem; font-weight: 600; }
+    .tag.blue { background: var(--step1-bg); color: var(--step1-color); border-color: var(--step1-border); }
+    .tag.purple { background: var(--step4-bg); color: var(--step4-color); border-color: var(--step4-border); }
+    .tag.orange { background: var(--step3-bg); color: var(--step3-color); border-color: var(--step3-border); }
+
+    /* STEP-BY-STEP PROGRESSION LIST IN STEP 4 */
+    .steps-list { display: flex; flex-direction: column; gap: 12px; }
+    
+    .step-item { 
+      display: flex; 
+      gap: 14px; 
+      align-items: flex-start; 
+      background: var(--surface); 
+      border-radius: 12px; 
+      padding: 14px 18px;
+      transition: transform 0.2s;
+    }
+    .step-item:hover { transform: translateX(6px); }
+
+    /* Heat Map Progression across sub-steps */
+    .step-item:nth-child(1) { border: 1px solid var(--step1-border); border-left: 6px solid var(--step1-color); background: var(--step1-bg); }
+    .step-item:nth-child(1) .step-num { background: var(--step1-color); }
+
+    .step-item:nth-child(2) { border: 1px solid var(--step2-border); border-left: 6px solid var(--step2-color); background: var(--step2-bg); }
+    .step-item:nth-child(2) .step-num { background: var(--step2-color); }
+
+    .step-item:nth-child(3) { border: 1px solid var(--step3-border); border-left: 6px solid var(--step3-color); background: var(--step3-bg); }
+    .step-item:nth-child(3) .step-num { background: var(--step3-color); }
+
+    .step-item:nth-child(4), .step-item:nth-child(n+4) { border: 1px solid var(--step4-border); border-left: 6px solid var(--step4-color); background: var(--step4-bg); }
+    .step-item:nth-child(4) .step-num, .step-item:nth-child(n+4) .step-num { background: var(--step4-color); }
+
+    .step-num { color: #fff; font-size: 0.75rem; font-weight: 800; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .step-text { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+    .step-text strong { color: var(--text); display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.9rem; }
+
+    .demand-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; }
+    .demand-high { background: #d1fae5; color: #065f46; }
+    .demand-medium { background: #fef3c7; color: #92400e; }
+    .demand-very-high { background: #c7d2fe; color: #3730a3; }
+    [data-theme="dark"] .demand-high { background: #064e3b; color: #34d399; }
+    [data-theme="dark"] .demand-medium { background: #3d2800; color: #fcd34d; }
+    [data-theme="dark"] .demand-very-high { background: #1e1b4b; color: #a5b4fc; }
 
     @media(max-width:900px){.detail-grid{grid-template-columns:1fr;}}
     @media(max-width:700px){
@@ -181,9 +354,13 @@
   </div>
 
   <div class="content">
+    
     <!-- STEP 1 -->
-    <div id="level-degree">
-      <div class="level-title">Step 1 — Select Your <span>Degree</span></div>
+    <div id="level-degree" class="step-block">
+      <div class="level-header-badge">
+        <span class="level-dot"></span>
+        Step 1 — Select Your Degree
+      </div>
       <div class="node-grid">
         <div class="node-card" onclick="selectDegree('be',this)"><div class="node-icon">🎓</div><div class="node-name">B.E / B.Tech</div><div class="node-sub">Bachelor of Engineering</div></div>
         <div class="node-card" onclick="selectDegree('diploma',this)"><div class="node-icon">📜</div><div class="node-name">Diploma</div><div class="node-sub">3-Year Polytechnic</div></div>
@@ -191,23 +368,42 @@
       </div>
     </div>
 
+    <!-- CONNECTOR LINE 1-2 -->
+    <div id="line-1-2" class="step-connector-line hidden"></div>
+
     <!-- STEP 2 -->
-    <div id="level-dept" class="hidden">
-      <div class="level-title">Step 2 — Select Your <span>Department</span></div>
+    <div id="level-dept" class="step-block hidden">
+      <div class="level-header-badge">
+        <span class="level-dot"></span>
+        Step 2 — Select Your Department
+      </div>
       <div class="node-grid" id="dept-grid"></div>
     </div>
 
+    <!-- CONNECTOR LINE 2-3 -->
+    <div id="line-2-3" class="step-connector-line hidden"></div>
+
     <!-- STEP 3 -->
-    <div id="level-job" class="hidden">
-      <div class="level-title">Step 3 — Select Your <span>Job Role</span></div>
+    <div id="level-job" class="step-block hidden">
+      <div class="level-header-badge">
+        <span class="level-dot"></span>
+        Step 3 — Select Your Job Role
+      </div>
       <div class="node-grid" id="job-grid"></div>
     </div>
 
+    <!-- CONNECTOR LINE 3-4 -->
+    <div id="line-3-4" class="step-connector-line hidden"></div>
+
     <!-- STEP 4 -->
-    <div id="level-detail" class="hidden">
-      <div class="level-title">Step 4 — Your <span>Career Roadmap</span></div>
+    <div id="level-detail" class="step-block hidden">
+      <div class="level-header-badge">
+        <span class="level-dot"></span>
+        Step 4 — Your Career Roadmap
+      </div>
       <div class="detail-panel" id="detail-panel"></div>
     </div>
+
   </div>
 </div>
 
@@ -958,9 +1154,17 @@ function selectDegree(degree,element){
     card.onclick=()=>selectDept(dept.id,card);
     grid.appendChild(card);
   });
+  
+  // Reveal Step 2 and its connector line
+  document.getElementById('line-1-2').classList.remove('hidden');
   document.getElementById('level-dept').classList.remove('hidden');
+  
+  // Hide downstream steps
+  document.getElementById('line-2-3').classList.add('hidden');
   document.getElementById('level-job').classList.add('hidden');
+  document.getElementById('line-3-4').classList.add('hidden');
   document.getElementById('level-detail').classList.add('hidden');
+  
   document.getElementById('level-dept').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -989,8 +1193,15 @@ function selectDept(deptId,element){
     card.onclick=()=>selectJob('default',card);
     grid.appendChild(card);
   }
+  
+  // Reveal Step 3 and its connector line
+  document.getElementById('line-2-3').classList.remove('hidden');
   document.getElementById('level-job').classList.remove('hidden');
+  
+  // Hide downstream steps
+  document.getElementById('line-3-4').classList.add('hidden');
   document.getElementById('level-detail').classList.add('hidden');
+  
   document.getElementById('level-job').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -1004,7 +1215,11 @@ function selectJob(jobId, element){
   const cardIcon = element.querySelector('.node-icon')?.textContent || '🎯';
 
   document.getElementById('detail-panel').innerHTML='<div style="text-align:center;padding:32px;color:var(--text2)">⏳ Loading roadmap...</div>';
+  
+  // Reveal Step 4 and its connector line
+  document.getElementById('line-3-4').classList.remove('hidden');
   document.getElementById('level-detail').classList.remove('hidden');
+  
   setTimeout(()=>renderRoadmap(jobId, cardName, cardIcon), 50);
   document.getElementById('level-detail').scrollIntoView({behavior:'smooth',block:'start'});
 }
