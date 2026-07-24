@@ -6,26 +6,20 @@
   <title>CareerCompass – Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet"/>
   <style>
-    /* ── CSS VARIABLES ── */
     :root{
-      --bg:#f0fdf4;--surface:#fff;--border:#e5e7eb;--border-green:#d1fae5;
-      --text:#1a1a1a;--text2:#6b7280;--primary:#059669;--primary-dark:#047857;
-      --primary-light:#ecfdf5;--primary-mid:#d1fae5;
-      --sidebar-bg:#064e3b;--topbar-bg:#fff;--input-bg:#f9fafb;
-      --card-bg:#fff;--card-border:#d1fae5;
+      --primary:#059669;--primary-dark:#047857;--primary-light:#ecfdf5;--primary-mid:#d1fae5;
+      --sidebar-bg:#064e3b;--bg:#f0fdf4;--surface:#fff;--border:#e5e7eb;--border-green:#d1fae5;
+      --text:#1a1a1a;--text2:#6b7280;--topbar-bg:#fff;--card-bg:#fff;--input-bg:#f9fafb;
     }
     [data-theme="dark"]{
-      --bg:#0a0d14;--surface:#0f1320;--border:#1e2433;--border-green:#1e4033;
-      --text:#e2e8f0;--text2:#64748b;--primary:#34d399;--primary-dark:#059669;
-      --primary-light:#0d2818;--primary-mid:#1e4033;
-      --sidebar-bg:#0f1320;--topbar-bg:#0f1320;--input-bg:#0a0d14;
-      --card-bg:#0f1320;--card-border:#1e2433;
+      --primary:#34d399;--primary-dark:#059669;--primary-light:#0d2818;--primary-mid:#1e4033;
+      --sidebar-bg:#0f1320;--bg:#0a0d14;--surface:#0f1320;--border:#1e2433;--border-green:#1e4033;
+      --text:#e2e8f0;--text2:#64748b;--topbar-bg:#0f1320;--card-bg:#0f1320;--input-bg:#0a0d14;
     }
-
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
 
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
     .sidebar-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0;}
     .sidebar-logo span{color:#fff;}
@@ -49,7 +43,7 @@
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;}
     .sidebar-overlay.open{display:block;}
 
-    /* ── TOPBAR ── */
+    /* TOPBAR */
     .topbar{position:fixed;top:0;left:240px;right:0;height:52px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s;}
     .topbar-left{display:flex;align-items:center;gap:10px;}
     .topbar-title{font-weight:700;color:var(--primary);font-size:0.95rem;font-family:'Space Grotesk',sans-serif;}
@@ -60,62 +54,52 @@
     .theme-btn:hover{background:var(--primary-light);}
     .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
 
-    /* ── MAIN ── */
+    /* MAIN */
     .main-content{margin-left:240px;margin-top:52px;flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg);min-height:calc(100vh - 52px);}
 
-    /* ── AUTH CARD ── */
-    .auth-card{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:22px;padding:36px 32px;width:100%;max-width:440px;box-shadow:0 8px 28px rgba(5,150,105,0.1);transition:background 0.3s;}
-
+    /* AUTH CARD */
+    .auth-card{background:var(--card-bg);border:1.5px solid var(--border-green);border-radius:22px;padding:36px 32px;width:100%;max-width:440px;box-shadow:0 8px 28px rgba(5,150,105,0.1);transition:background 0.3s;}
     .auth-logo{text-align:center;margin-bottom:24px;}
     .auth-logo-icon{font-size:2.4rem;margin-bottom:8px;}
     .auth-logo h1{font-size:1.4rem;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;}
     .auth-logo p{font-size:0.82rem;color:var(--text2);margin-top:3px;}
 
-    /* ── TABS ── */
+    /* TABS */
     .auth-tabs{display:flex;background:var(--primary-light);border-radius:12px;padding:4px;margin-bottom:24px;gap:4px;}
     .auth-tab{flex:1;padding:8px;border-radius:9px;border:none;background:transparent;font-size:0.84rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all 0.2s;}
     .auth-tab.active{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,0.3);}
 
-    /* ── FORM ── */
+    /* FORM */
     .auth-form{display:flex;flex-direction:column;gap:14px;}
     .auth-form.hidden{display:none;}
     .form-group{display:flex;flex-direction:column;gap:5px;}
     .form-group label{font-size:0.76rem;font-weight:700;color:var(--text2);}
     .form-group input{padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;font-family:'Inter',sans-serif;color:var(--text);background:var(--input-bg);outline:none;transition:border-color 0.2s;}
     .form-group input:focus{border-color:var(--primary);background:var(--surface);}
-
-    /* Password strength */
     .pw-strength{height:4px;border-radius:4px;background:var(--border);margin-top:5px;overflow:hidden;}
     .pw-strength-fill{height:100%;border-radius:4px;width:0%;transition:width 0.3s,background 0.3s;}
     .pw-hint{font-size:0.68rem;color:var(--text2);margin-top:3px;}
+    .forgot-link{font-size:0.76rem;color:var(--primary);text-align:right;cursor:pointer;display:block;margin-top:-6px;}
+    .forgot-link:hover{text-decoration:underline;}
 
-    /* Submit button */
+    /* BUTTONS */
     .auth-btn{background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;padding:12px;border-radius:12px;font-size:0.92rem;font-weight:800;cursor:pointer;width:100%;font-family:'Space Grotesk',sans-serif;transition:transform 0.2s,box-shadow 0.2s;margin-top:4px;}
     .auth-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,150,105,0.3);}
     .auth-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
-
-    /* Divider */
     .divider{display:flex;align-items:center;gap:10px;margin:6px 0;}
     .divider hr{flex:1;border:none;border-top:1px solid var(--border);}
     .divider span{font-size:0.75rem;color:var(--text2);}
-
-    /* Google button */
     .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);padding:11px;border-radius:12px;font-size:0.88rem;font-weight:600;cursor:pointer;width:100%;transition:all 0.2s;}
     .google-btn:hover{border-color:var(--primary);background:var(--primary-light);}
-    .google-icon{font-size:1.1rem;}
 
-    /* Forgot password */
-    .forgot-link{font-size:0.76rem;color:var(--primary);text-align:right;cursor:pointer;text-decoration:none;display:block;margin-top:-6px;}
-    .forgot-link:hover{text-decoration:underline;}
-
-    /* Error/Success */
+    /* MESSAGE */
     .auth-msg{padding:10px 14px;border-radius:10px;font-size:0.82rem;font-weight:600;display:none;margin-top:4px;}
     .auth-msg.error{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;display:block;}
     .auth-msg.success{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;display:block;}
-    [data-theme="dark"] .auth-msg.error{background:#2d0a0a;border-color:#7f1d1d;}
-    [data-theme="dark"] .auth-msg.success{background:#0d2818;border-color:#1e4033;}
+    [data-theme="dark"] .auth-msg.error{background:#2d0a0a;color:#f87171;border-color:#7f1d1d;}
+    [data-theme="dark"] .auth-msg.success{background:#0d2818;color:#34d399;border-color:#1e4033;}
 
-    /* ── LOGGED IN STATE ── */
+    /* LOGGED IN */
     .logged-in-panel{display:none;text-align:center;}
     .li-avatar{width:72px;height:72px;background:linear-gradient(135deg,#059669,#34d399);border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;}
     .li-name{font-size:1.1rem;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:4px;}
@@ -168,7 +152,7 @@
   </div>
   <div class="sidebar-bottom">
     <div class="sidebar-profile" onclick="window.location.href='gamify.html'">
-      <div class="profile-avatar" id="sidebarAvatar">S</div>
+      <div class="profile-avatar" id="sidebarAvatar">👤</div>
       <div>
         <div class="profile-name" id="sidebarName">Student</div>
         <div class="profile-level" id="sidebarLevel">🏅 Login to sync data</div>
@@ -196,20 +180,17 @@
 <!-- MAIN -->
 <div class="main-content">
   <div class="auth-card">
-
     <div class="auth-logo">
       <div class="auth-logo-icon">🧭</div>
       <h1>CareerCompass</h1>
       <p>Login or Sign Up to save your career progress to cloud</p>
     </div>
 
-    <!-- AUTH TABS -->
     <div class="auth-tabs" id="authTabs">
       <button class="auth-tab active" onclick="switchTab('login')">🔐 Login</button>
       <button class="auth-tab" onclick="switchTab('signup')">✨ Sign Up</button>
     </div>
 
-    <!-- MESSAGE -->
     <div class="auth-msg" id="authMsg"></div>
 
     <!-- LOGIN FORM -->
@@ -225,9 +206,12 @@
       </div>
       <button class="auth-btn" id="loginBtn" onclick="window._doLogin()">🔐 Login to CareerCompass</button>
       <div class="divider"><hr/><span>or</span><hr/></div>
+      <button class="google-btn" onclick="window._googleLogin()">
+        <span>🌐</span> Continue with Google
+      </button>
     </div>
 
-    <!-- SIGN UP FORM -->
+    <!-- SIGNUP FORM -->
     <div class="auth-form hidden" id="signupForm">
       <div class="form-group">
         <label>Full Name</label>
@@ -246,7 +230,7 @@
       <button class="auth-btn" id="signupBtn" onclick="window._doSignup()">✨ Create Account</button>
       <div class="divider"><hr/><span>or</span><hr/></div>
       <button class="google-btn" onclick="window._googleLogin()">
-        <span class="google-icon">🌐</span> Continue with Google
+        <span>🌐</span> Continue with Google
       </button>
     </div>
 
@@ -264,7 +248,6 @@
       </div>
       <button class="logout-btn" onclick="window._doLogout()">🚪 Logout</button>
     </div>
-
   </div>
 </div>
 
@@ -277,7 +260,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey:            "",
+  apiKey:            "AIzaSyD0KQIXnYg7pMDrQs_Ln3MR-_XNQAlO8uY",
   authDomain:        "careercompass-2add1.firebaseapp.com",
   projectId:         "careercompass-2add1",
   storageBucket:     "careercompass-2add1.firebasestorage.app",
@@ -290,32 +273,29 @@ const auth     = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 // ── DARK MODE ─────────────────────────────────────────
-window.toggleTheme = function(){
+function toggleTheme(){
   const isDark = document.body.getAttribute('data-theme')==='dark';
   document.body.setAttribute('data-theme', isDark?'':'dark');
   document.getElementById('themeBtn').textContent = isDark?'🌙':'☀️';
   localStorage.setItem('cc_theme', isDark?'light':'dark');
-};
+}
 (function(){
   if(localStorage.getItem('cc_theme')==='dark'){
     document.body.setAttribute('data-theme','dark');
     document.getElementById('themeBtn').textContent='☀️';
   }
 })();
+window.toggleTheme = toggleTheme;
 
 // ── SIDEBAR ───────────────────────────────────────────
-window.toggleSidebar = function(){
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-};
-window.closeSidebar = function(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-};
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+window.toggleSidebar = toggleSidebar;
+window.closeSidebar  = closeSidebar;
 
-// ── SWITCH TAB ────────────────────────────────────────
+// ── TABS ──────────────────────────────────────────────
 window.switchTab = function(tab){
-  document.getElementById('loginForm').classList.toggle('hidden', tab!=='login');
+  document.getElementById('loginForm').classList.toggle('hidden',  tab!=='login');
   document.getElementById('signupForm').classList.toggle('hidden', tab!=='signup');
   document.querySelectorAll('.auth-tab').forEach((el,i)=>{
     el.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1));
@@ -323,57 +303,49 @@ window.switchTab = function(tab){
   hideMsg();
 };
 
-// ── MESSAGE ───────────────────────────────────────────
-function showMsg(text, type='error'){
-  const el = document.getElementById('authMsg');
-  el.textContent = text;
-  el.className = 'auth-msg ' + type;
-}
-function hideMsg(){ document.getElementById('authMsg').className='auth-msg'; }
-
 // ── PASSWORD STRENGTH ─────────────────────────────────
 window.checkPasswordStrength = function(val){
-  const fill = document.getElementById('pwFill');
-  const hint = document.getElementById('pwHint');
-  let score = 0;
+  const fill=document.getElementById('pwFill');
+  const hint=document.getElementById('pwHint');
+  let score=0;
   if(val.length>=8) score++;
   if(/[A-Z]/.test(val)) score++;
   if(/[0-9]/.test(val)) score++;
   if(/[^A-Za-z0-9]/.test(val)) score++;
-  const colors = ['#ef4444','#f97316','#eab308','#059669'];
-  const labels = ['Weak','Fair','Good','Strong'];
-  fill.style.width  = (score*25)+'%';
+  const colors=['#ef4444','#f97316','#eab308','#059669'];
+  const labels=['Weak','Fair','Good','Strong'];
+  fill.style.width      = (score*25)+'%';
   fill.style.background = colors[score-1]||'#e5e7eb';
-  hint.textContent  = score>0 ? labels[score-1] : 'Use 8+ characters with numbers and symbols';
-  hint.style.color  = colors[score-1]||'var(--text2)';
+  hint.textContent      = score>0?labels[score-1]:'Use 8+ characters with numbers and symbols';
+  hint.style.color      = colors[score-1]||'var(--text2)';
 };
 
-// ── SHOW LOGGED IN PANEL ──────────────────────────────
+// ── MESSAGES ──────────────────────────────────────────
+function showMsg(text, type='error'){
+  const el=document.getElementById('authMsg');
+  el.textContent=text;
+  el.className='auth-msg '+type;
+}
+function hideMsg(){document.getElementById('authMsg').className='auth-msg';}
+
+// ── SHOW LOGGED IN ────────────────────────────────────
 function showLoggedIn(user){
   document.getElementById('authTabs').style.display      = 'none';
   document.getElementById('loginForm').classList.add('hidden');
   document.getElementById('signupForm').classList.add('hidden');
   document.getElementById('loggedInPanel').style.display = 'block';
   hideMsg();
-
-  const name  = user.displayName || user.email.split('@')[0];
-  const email = user.email;
-  const init  = name[0].toUpperCase();
-
-  document.getElementById('liAvatar').textContent = init;
-  document.getElementById('liName').textContent   = '👋 Welcome, ' + name + '!';
-  document.getElementById('liEmail').textContent  = email;
-
-  // Update sidebar
-  document.getElementById('sidebarAvatar').textContent  = init;
+  const name = user.displayName || user.email.split('@')[0];
+  document.getElementById('liAvatar').textContent = name[0].toUpperCase();
+  document.getElementById('liName').textContent   = '👋 Welcome, '+name+'!';
+  document.getElementById('liEmail').textContent  = user.email;
+  document.getElementById('sidebarAvatar').textContent  = name[0].toUpperCase();
   document.getElementById('sidebarName').textContent    = name;
   document.getElementById('sidebarLevel').textContent   = '✅ Logged in';
   document.getElementById('sidebarLoginBtn').textContent = '🚪 Logout';
   document.getElementById('sidebarLoginBtn').onclick    = window._doLogout;
-
-  // Save to localStorage for other pages
   localStorage.setItem('cc_user_name',  name);
-  localStorage.setItem('cc_user_email', email);
+  localStorage.setItem('cc_user_email', user.email);
 }
 
 function showLoggedOut(){
@@ -382,48 +354,46 @@ function showLoggedOut(){
   document.getElementById('signupForm').classList.add('hidden');
   document.getElementById('loggedInPanel').style.display = 'none';
   document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',i===0));
-
-  document.getElementById('sidebarAvatar').textContent  = '👤';
-  document.getElementById('sidebarName').textContent    = 'Student';
-  document.getElementById('sidebarLevel').textContent   = '🏅 Login to sync data';
+  document.getElementById('sidebarAvatar').textContent   = '👤';
+  document.getElementById('sidebarName').textContent     = 'Student';
+  document.getElementById('sidebarLevel').textContent    = '🏅 Login to sync data';
   document.getElementById('sidebarLoginBtn').textContent = '🔐 Login to Save Progress';
-  document.getElementById('sidebarLoginBtn').onclick    = ()=>window.location.href='login.html';
-
+  document.getElementById('sidebarLoginBtn').onclick     = ()=>window.location.href='login.html';
   localStorage.removeItem('cc_user_name');
   localStorage.removeItem('cc_user_email');
 }
 
 // ── AUTH FUNCTIONS ────────────────────────────────────
 window._doLogin = async function(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPassword').value;
-  if(!email||!pass){ showMsg('Please fill in all fields.'); return; }
-  const btn = document.getElementById('loginBtn');
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass =document.getElementById('loginPassword').value;
+  if(!email||!pass){showMsg('Please fill in all fields.');return;}
+  const btn=document.getElementById('loginBtn');
   btn.disabled=true; btn.textContent='Logging in...'; hideMsg();
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
     showMsg('✅ Login successful! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html', 1200);
-  } catch(err){
+    setTimeout(()=>window.location.href='index.html',1200);
+  }catch(err){
     showMsg(getFriendlyError(err.code));
     btn.disabled=false; btn.textContent='🔐 Login to CareerCompass';
   }
 };
 
 window._doSignup = async function(){
-  const name  = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const pass  = document.getElementById('signupPassword').value;
-  if(!name||!email||!pass){ showMsg('Please fill in all fields.'); return; }
-  if(pass.length<6){ showMsg('Password must be at least 6 characters.'); return; }
-  const btn = document.getElementById('signupBtn');
+  const name =document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass =document.getElementById('signupPassword').value;
+  if(!name||!email||!pass){showMsg('Please fill in all fields.');return;}
+  if(pass.length<6){showMsg('Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('signupBtn');
   btn.disabled=true; btn.textContent='Creating account...'; hideMsg();
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await updateProfile(cred.user, { displayName: name });
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await updateProfile(cred.user,{displayName:name});
     showMsg('✅ Account created! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html', 1200);
-  } catch(err){
+    setTimeout(()=>window.location.href='index.html',1200);
+  }catch(err){
     showMsg(getFriendlyError(err.code));
     btn.disabled=false; btn.textContent='✨ Create Account';
   }
@@ -431,57 +401,55 @@ window._doSignup = async function(){
 
 window._googleLogin = async function(){
   hideMsg();
-  try {
-    await signInWithPopup(auth, provider);
+  try{
+    await signInWithPopup(auth,provider);
     showMsg('✅ Google login successful! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html', 1200);
-  } catch(err){
+    setTimeout(()=>window.location.href='index.html',1200);
+  }catch(err){
     if(err.code!=='auth/popup-closed-by-user') showMsg(getFriendlyError(err.code));
   }
 };
 
 window._doLogout = async function(){
   if(!confirm('Are you sure you want to logout?')) return;
-  try {
+  try{
     await signOut(auth);
     showMsg('✅ Logged out successfully.','success');
     showLoggedOut();
-    setTimeout(()=>window.location.href='index.html', 1200);
-  } catch(err){
-    showMsg('Logout failed. Please try again.');
-  }
+    setTimeout(()=>window.location.href='index.html',1200);
+  }catch(err){ showMsg('Logout failed. Please try again.'); }
 };
 
 window._forgotPassword = async function(){
-  const email = document.getElementById('loginEmail').value.trim();
-  if(!email){ showMsg('Enter your email address first, then click Forgot Password.'); return; }
-  try {
-    await sendPasswordResetEmail(auth, email);
+  const email=document.getElementById('loginEmail').value.trim();
+  if(!email){showMsg('Enter your email address first, then click Forgot Password.');return;}
+  try{
+    await sendPasswordResetEmail(auth,email);
     showMsg('✅ Password reset email sent! Check your inbox.','success');
-  } catch(err){
-    showMsg(getFriendlyError(err.code));
-  }
+  }catch(err){ showMsg(getFriendlyError(err.code)); }
 };
 
-// ── FRIENDLY ERROR MESSAGES ───────────────────────────
+// ── FRIENDLY ERRORS ───────────────────────────────────
 function getFriendlyError(code){
-  const map = {
+  const map={
     'auth/user-not-found':       '❌ No account found with this email.',
     'auth/wrong-password':       '❌ Incorrect password. Try again.',
     'auth/invalid-email':        '❌ Invalid email address.',
     'auth/email-already-in-use': '❌ Email already registered. Try logging in.',
     'auth/weak-password':        '❌ Password too weak. Use 6+ characters.',
     'auth/too-many-requests':    '❌ Too many attempts. Try again later.',
-    'auth/network-request-failed':'❌ Network error. Check your internet connection.',
+    'auth/network-request-failed':'❌ Network error. Check your connection.',
     'auth/invalid-credential':   '❌ Incorrect email or password.',
+    'auth/popup-blocked':        '❌ Popup blocked. Allow popups for this site.',
+    'auth/cancelled-popup-request':'❌ Popup cancelled. Try again.',
   };
-  return map[code] || '❌ Something went wrong. Please try again.';
+  return map[code]||'❌ Something went wrong. Please try again.';
 }
 
 // ── AUTH STATE ────────────────────────────────────────
-onAuthStateChanged(auth, (user) => {
-  if(user){ showLoggedIn(user); }
-  else    { showLoggedOut();    }
+onAuthStateChanged(auth,(user)=>{
+  if(user) showLoggedIn(user);
+  else     showLoggedOut();
 });
 </script>
 </body>
