@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>CareerCompass – Resume Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet"/>
   <style>
@@ -22,9 +22,10 @@
       --entry-bg:#0a0d14;--entry-border:#1e2433;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;overflow-x:hidden;}
 
-    .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
+    /* ── SIDEBAR ── */
+    .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:transform 0.3s ease;}
     .sidebar-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
     .sidebar-logo span{color:#fff;}
     .sidebar-section-label{font-size:0.62rem;font-weight:700;color:#6ee7b7;text-transform:uppercase;letter-spacing:1px;padding:10px 20px 4px;opacity:0.7;flex-shrink:0;}
@@ -48,23 +49,25 @@
     .sidebar-login-btn{background:#059669;color:#fff;border:none;padding:8px 12px;border-radius:10px;font-size:0.76rem;font-weight:700;cursor:pointer;text-align:center;transition:background 0.2s;}
     .sidebar-login-btn:hover{background:#047857;}
 
-    .topbar{position:fixed;top:0;left:240px;right:0;height:56px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.06);transition:background 0.3s,border-color 0.3s;}
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:0;left:240px;right:0;height:56px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.06);transition:left 0.3s ease, background 0.3s, border-color 0.3s;}
     .topbar-left{display:flex;align-items:center;gap:10px;}
-    .topbar-greeting{font-size:0.88rem;font-weight:600;color:var(--primary);}
+    .topbar-title{font-size:0.95rem;font-weight:700;color:var(--primary);font-family:'Space Grotesk',sans-serif;}
     .topbar-sub{font-size:0.72rem;color:var(--text2);}
     .topbar-right{display:flex;align-items:center;gap:10px;}
     .topbar-badge{display:flex;align-items:center;gap:5px;background:var(--primary-light);color:var(--primary);font-size:0.72rem;font-weight:700;padding:5px 10px;border-radius:18px;border:1px solid var(--primary-mid);}
     .print-topbar-btn{background:#059669;color:#fff;border:none;padding:7px 16px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
     .print-topbar-btn:hover{background:#047857;}
-    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#064e3b;}
+    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
 
-    .main-content{margin-left:90px;margin-top:29px;flex:1;min-height:calc(100vh - 56px);background:var(--bg);transition:background 0.3s;}
+    /* ── MAIN CONTENT AREA ── */
+    .main-content{margin-left:240px;margin-top:56px;flex:1;min-height:calc(100vh - 56px);background:var(--bg);transition:margin-left 0.3s ease, background 0.3s;width:calc(100% - 240px);}
 
-    .page-header{background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));padding:28px 40px 20px;text-align:center;border-bottom:1px solid var(--border-green);}
+    .page-header{background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));padding:28px 20px 20px;text-align:center;border-bottom:1px solid var(--border-green);}
     .page-header h1{font-size:1.85rem;font-weight:800;color:var(--text);margin-bottom:7px;font-family:'Space Grotesk',sans-serif;}
     .page-header p{color:var(--text2);font-size:0.9rem;}
 
-    .builder-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;margin:0 auto;padding:24px 32px;}
+    .builder-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1200px;margin:0 auto;padding:24px;}
 
     .form-panel{display:flex;flex-direction:column;gap:16px;}
     .section-card{background:var(--card-bg);border:1.5px solid var(--border-green);border-radius:16px;padding:20px 20px 16px;transition:box-shadow 0.2s,background 0.3s;}
@@ -91,12 +94,12 @@
 
     .skills-input-wrap{display:flex;gap:7px;}
     .skills-input-wrap input{flex:1;}
-    .skills-input-wrap button{background:var(--primary);color:#fff;border:none;padding:8px 12px;border-radius:9px;font-size:0.8rem;font-weight:700;cursor:pointer;}
+    .skills-input-wrap button{background:var(--primary);color:#fff;border:none;padding:8px 12px;border-radius:9px;font-size:0.8rem;font-weight:700;cursor:pointer;flex-shrink:0;}
     .skills-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
     .skill-tag{background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-mid);border-radius:7px;padding:3px 9px;font-size:0.72rem;font-weight:600;display:flex;align-items:center;gap:4px;}
     .skill-tag button{background:none;border:none;color:#dc2626;cursor:pointer;font-size:0.78rem;line-height:1;padding:0;}
 
-    .photo-upload-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+    .photo-upload-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
     .photo-preview{width:64px;height:64px;border-radius:50%;border:2px solid #d1fae5;object-fit:cover;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;}
     .photo-preview img{width:100%;height:100%;object-fit:cover;}
     .photo-upload-btn{background:var(--primary-light);color:var(--primary);border:1.5px solid var(--primary-mid);border-radius:8px;padding:6px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;margin-right:6px;}
@@ -106,32 +109,33 @@
     .generate-btn{background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;padding:13px;border-radius:12px;font-size:0.96rem;font-weight:800;cursor:pointer;width:100%;transition:transform 0.2s,box-shadow 0.2s;font-family:'Space Grotesk',sans-serif;}
     .generate-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,150,105,0.3);}
 
-    .preview-panel{position:sticky;top:90px;height:fit-content;}
-    .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    /* ── PREVIEW PANEL ── */
+    .preview-panel{position:sticky;top:76px;height:fit-content;}
+    .preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
     .preview-header h3{font-size:0.85rem;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;}
     .print-btn{background:#059669;color:#fff;border:none;padding:7px 16px;border-radius:9px;font-size:0.8rem;font-weight:700;cursor:pointer;}
     .print-btn:hover{background:#047857;}
 
-    #resumePreview{background:#fff;border:1.5px solid var(--border-green);border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,0.08);min-height:380px;}
+    #resumePreview{background:#fff;border:1.5px solid var(--border-green);border-radius:14px;overflow-x:auto;box-shadow:0 4px 18px rgba(0,0,0,0.08);min-height:380px;width:100%;}
     .preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 20px;color:#9ca3af;text-align:center;}
     .preview-empty .pe-icon{font-size:2.8rem;margin-bottom:12px;}
     .preview-empty h3{font-size:0.95rem;font-weight:700;color:var(--text2);margin-bottom:5px;}
 
-    .resume{padding:24px 28px;font-family:'Inter',sans-serif;font-size:0.8rem;line-height:1.5;color:#1a1a1a;}
-    .resume-header{border-bottom:3px solid #059669;padding-bottom:12px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;}
+    .resume{padding:24px 28px;font-family:'Inter',sans-serif;font-size:0.8rem;line-height:1.5;color:#1a1a1a;width:100%;box-sizing:border-box;word-wrap:break-word;}
+    .resume-header{border-bottom:3px solid #059669;padding-bottom:12px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
     .resume-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #059669;flex-shrink:0;}
-    .resume-header-info{flex:1;}
-    .resume-name{font-size:1.5rem;font-weight:800;color:#064e3b;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.5px;}
+    .resume-header-info{flex:1;min-width:200px;}
+    .resume-name{font-size:1.5rem;font-weight:800;color:#064e3b;font-family:'Space Grotesk',sans-serif;letter-spacing:-0.5px;word-break:break-word;}
     .resume-role{font-size:0.88rem;font-weight:600;color:#059669;margin:2px 0 7px;}
     .resume-contact{display:flex;flex-wrap:wrap;gap:10px;font-size:0.73rem;color:#4b5563;}
-    .resume-contact span{display:flex;align-items:center;gap:4px;}
+    .resume-contact span{display:flex;align-items:center;gap:4px;word-break:break-all;}
     .resume-section{margin-bottom:12px;}
     .resume-section-title{font-size:0.7rem;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #d1fae5;padding-bottom:3px;margin-bottom:7px;}
     .resume-objective{font-size:0.78rem;color:#374151;line-height:1.6;}
     .resume-item{margin-bottom:9px;}
-    .resume-item-header{display:flex;justify-content:space-between;align-items:flex-start;}
+    .resume-item-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;}
     .resume-item-title{font-weight:700;color:#064e3b;font-size:0.81rem;}
-    .resume-item-date{font-size:0.7rem;color:#6b7280;white-space:nowrap;margin-left:8px;}
+    .resume-item-date{font-size:0.7rem;color:#6b7280;white-space:nowrap;margin-left:auto;}
     .resume-item-sub{font-size:0.73rem;color:#059669;font-weight:600;margin:1px 0;}
     .resume-item-desc{font-size:0.75rem;color:#4b5563;margin-top:2px;line-height:1.5;}
     .resume-item-desc ul{padding-left:13px;}
@@ -139,57 +143,77 @@
     .skills-grid{display:flex;flex-wrap:wrap;gap:5px;}
     .resume-skill-tag{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:5px;padding:2px 8px;font-size:0.7rem;font-weight:600;}
     .cert-list{display:flex;flex-direction:column;gap:3px;}
-    .cert-item{display:flex;justify-content:space-between;font-size:0.75rem;}
+    .cert-item{display:flex;justify-content:space-between;font-size:0.75rem;flex-wrap:wrap;gap:4px;}
     .cert-name{color:#374151;font-weight:600;}
     .cert-issuer{color:#6b7280;}
 
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;}
 
+    .theme-btn{background:none;border:1.5px solid var(--border-green);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .theme-btn:hover{background:var(--primary-light);}
+
+    /* ── RESPONSIVE MEDIA QUERIES ── */
     @media print{
       .sidebar,.topbar,.form-panel,.preview-header,.page-header,.sidebar-overlay{display:none!important;}
       body{background:#fff;display:block;}
-      .main-content{margin-left:240px;margin-top:56px;flex:1;min-height:calc(100vh - 56px);background:var(--bg);transition:background 0.3s;}
+      .main-content{margin-left:0!important;margin-top:0!important;width:100%!important;}
       .builder-wrap{display:block;padding:0;}
       .preview-panel{position:static;}
       #resumePreview{border:none;box-shadow:none;border-radius:0;}
-      .resume{padding:16px 20px;}
+      .resume{padding:0;}
     }
 
-    @media(max-width:1000px){.builder-wrap{grid-template-columns:1fr;padding:20px 16px;}.preview-panel{position:static;}}
-    @media(max-width:700px){
-      .sidebar{transform:translateX(-100%);transition:transform 0.3s;z-index:300;}
+    @media (max-width:1024px){
+      .builder-wrap{grid-template-columns:1fr;padding:20px 16px;}
+      .preview-panel{position:static;}
+    }
+
+    @media (max-width:768px){
+      .sidebar{transform:translateX(-100%);z-index:300;}
       .sidebar.open{transform:translateX(0);}
       .sidebar-overlay.open{display:block;}
-      .topbar{left:0;}
-      .main-content{margin-left:240px;margin-top:56px;flex:1;min-height:calc(100vh - 56px);background:var(--bg);transition:background 0.3s;}
+      .topbar{left:0;padding:0 16px;}
+      .main-content{margin-left:0;width:100%;}
       .hamburger{display:block;}
-      .page-header h1{font-size:1.5rem;}
+      .topbar-sub, .topbar-badge{display:none;}
+      .page-header{padding:20px 16px;}
+      .page-header h1{font-size:1.4rem;}
       .form-row{grid-template-columns:1fr;}
+      .import-bar{flex-direction:column;align-items:flex-start;gap:6px;}
+      .import-status{margin-left:0;}
     }
-    .theme-btn{background:none;border:1.5px solid var(--border-green);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-    .theme-btn:hover{background:var(--primary-light);}
+
+    @media (max-width:480px){
+      .builder-wrap{padding:12px 8px;}
+      .section-card{padding:14px 12px;}
+      .resume{padding:16px 12px;}
+      .resume-name{font-size:1.25rem;}
+      .resume-header{gap:10px;}
+    }
   </style>
 </head>
 <body>
+
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo" onclick="window.location.href='index.html'">🧭 Career<span>Compass</span></div>
   <div class="sidebar-scroll">
     <div class="sidebar-section-label">Main Menu</div>
     <nav class="sidebar-nav">
-      <a class="nav-item " href="index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
-      <a class="nav-item " href="roadmap.html"><span class="nav-icon">🗺️</span><span class="nav-label">Roadmap</span></a>
-      <a class="nav-item " href="progress.html"><span class="nav-icon">✅</span><span class="nav-label">Progress</span></a>
+      <a class="nav-item" href="index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+      <a class="nav-item" href="roadmap.html"><span class="nav-icon">🗺️</span><span class="nav-label">Roadmap</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">✅</span><span class="nav-label">Progress</span></a>
       <a class="nav-item active" href="resume.html"><span class="nav-icon">📄</span><span class="nav-label">Resume</span></a>
-      <a class="nav-item " href="compare.html"><span class="nav-icon">⚖️</span><span class="nav-label">Compare</span></a>
+      <a class="nav-item" href="compare.html"><span class="nav-icon">⚖️</span><span class="nav-label">Compare</span></a>
     </nav>
     <div class="nav-divider"></div>
     <div class="sidebar-section-label">Account</div>
     <nav class="sidebar-nav">
-      <a class="nav-item " href="gamify.html"><span class="nav-icon">🎮</span><span class="nav-label">My Profile</span></a>
-      <a class="nav-item " href="chatbot.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Chat</span></a>
-      <a class="nav-item " href="buddy.html"><span class="nav-icon">🤝</span><span class="nav-label">Career Buddy</span></a>
-      <a class="nav-item " href="login.html"><span class="nav-icon">🔐</span><span class="nav-label">Login / Sign Up</span></a>
+      <a class="nav-item" href="gamify.html"><span class="nav-icon">🎮</span><span class="nav-label">My Profile</span></a>
+      <a class="nav-item" href="chatbot.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Chat</span></a>
+      <a class="nav-item" href="buddy.html"><span class="nav-icon">🤝</span><span class="nav-label">Career Buddy</span></a>
+      <a class="nav-item" href="login.html"><span class="nav-icon">🔐</span><span class="nav-label">Login / Sign Up</span></a>
     </nav>
   </div>
   <div class="sidebar-bottom">
@@ -203,6 +227,7 @@
     <button class="sidebar-login-btn" onclick="window.location.href='login.html'">🔐 Login to Save Progress</button>
   </div>
 </aside>
+
 <header class="topbar">
   <div class="topbar-left">
     <button class="hamburger" onclick="toggleSidebar()">☰</button>
@@ -216,9 +241,8 @@
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
   </div>
 </header>
-<div class="main-content">
 
-<!-- MAIN CONTENT -->
+<!-- MAIN CONTENT WRAPPER -->
 <div class="main-content">
   <div class="page-header">
     <h1>📄 Resume Generator</h1>
@@ -354,7 +378,7 @@ import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyD0KQIXnYg7pMDrQs_Ln3MR-_XNQAlO8uY",
   authDomain: "careercompass-2add1.firebaseapp.com",
   projectId: "careercompass-2add1",
   storageBucket: "careercompass-2add1.firebasestorage.app",
@@ -579,7 +603,7 @@ window.removeEntry = function (type, idx) {
   livePreview();
 };
 
-/* ---------- skills tags (Add button + per-tag ✕ button) ---------- */
+/* ---------- skills tags ---------- */
 window.addSkill = function () {
   const input = document.getElementById('skillInput');
   const val = input.value.trim();
@@ -755,7 +779,7 @@ window.generateResume = function (silent = false) {
     alert('Please fill in Full Name, Target Role and Email before generating your resume.');
     return;
   }
-  if (!name && silent) return; // don't render an empty shell on first keystrokes
+  if (!name && silent) return;
 
   hasGenerated = true;
   document.getElementById('resumePreview').innerHTML = buildResumeHtml();
@@ -833,7 +857,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 </script>
-</div><!-- end main-content -->
 
 <script>
 function toggleTheme(){
