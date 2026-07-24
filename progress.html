@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerCompass – Progress Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── CSS VARIABLES ── */
+    :root{
+      --bg:#f9fafb; --surface:#fff; --border:#e5e7eb;
+      --border-green:#d1fae5; --text:#1a1a1a; --text2:#6b7280;
+      --primary:#059669; --primary-dark:#047857;
+      --primary-light:#ecfdf5; --primary-mid:#d1fae5;
+      --sidebar-bg:#064e3b; --topbar-bg:#fff;
+      --card-bg:#fff; --card-border:#d1fae5;
+      --stat-bg:#fff; --input-bg:#fafafa;
+      --check-bg:#fff; --check-border:#e5e7eb;
+      --check-done-bg:#ecfdf5; --check-done-border:#059669;
+      --sync-bar-bg:#f0fdf4; --sync-bar-border:#d1fae5;
+      --entry-bg:#f9fafb;
+    }
+    [data-theme="dark"]{
+      --bg:#0a0d14; --surface:#0f1320; --border:#1e2433;
+      --border-green:#1e4033; --text:#e2e8f0; --text2:#64748b;
+      --primary:#34d399; --primary-dark:#059669;
+      --primary-light:#0d2818; --primary-mid:#1e4033;
+      --sidebar-bg:#0f1320; --topbar-bg:#0f1320;
+      --card-bg:#0f1320; --card-border:#1e2433;
+      --stat-bg:#0f1320; --input-bg:#0a0d14;
+      --check-bg:#0f1320; --check-border:#1e2433;
+      --check-done-bg:#0d2818; --check-done-border:#059669;
+      --sync-bar-bg:#0d2818; --sync-bar-border:#1e4033;
+      --entry-bg:#0a0d14;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
+    .sidebar-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0;}
+    .sidebar-logo span{color:#fff;}
+    .sidebar-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+    .sidebar-scroll::-webkit-scrollbar{display:none;}
+    .sidebar-section-label{font-size:0.62rem;font-weight:700;color:#6ee7b7;text-transform:uppercase;letter-spacing:1px;padding:10px 20px 4px;opacity:0.7;}
+    .sidebar-nav{padding:4px 10px;display:flex;flex-direction:column;gap:2px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:#a7f3d0;text-decoration:none;font-size:0.83rem;font-weight:500;transition:all 0.2s;white-space:nowrap;}
+    .nav-item:hover{background:rgba(255,255,255,0.1);color:#fff;}
+    .nav-item.active{background:#059669;color:#fff;font-weight:700;}
+    .nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+    .nav-badge{margin-left:auto;background:#059669;color:#fff;font-size:0.62rem;font-weight:700;padding:2px 6px;border-radius:8px;}
+    .nav-item.active .nav-badge{background:rgba(255,255,255,0.25);}
+    .nav-divider{height:1px;background:rgba(255,255,255,0.08);margin:6px 10px;}
+    .sidebar-bottom{padding:10px 10px 12px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;background:var(--sidebar-bg);}
+    .sidebar-profile{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.07);cursor:pointer;margin-bottom:8px;transition:background 0.2s;}
+    .sidebar-profile:hover{background:rgba(255,255,255,0.12);}
+    .profile-avatar{width:32px;height:32px;background:linear-gradient(135deg,#059669,#34d399);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:0.9rem;flex-shrink:0;}
+    .profile-name{font-size:0.78rem;font-weight:700;color:#fff;}
+    .profile-level{font-size:0.65rem;color:#6ee7b7;margin-top:1px;}
+    .sidebar-login-btn{width:100%;background:#059669;color:#fff;border:none;padding:9px;border-radius:10px;font-weight:700;font-size:0.78rem;cursor:pointer;transition:background 0.2s;}
+    .sidebar-login-btn:hover{background:#047857;}
+
+    /* ── SYNC BAR ── */
+    .sync-bar{position:fixed;top:0;left:240px;right:0;height:30px;background:var(--sync-bar-bg);border-bottom:1px solid var(--sync-bar-border);display:flex;align-items:center;padding:0 24px;gap:8px;z-index:99;transition:background 0.3s;}
+    .sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .sync-dot.green{background:#059669;}
+    .sync-dot.yellow{background:#f59e0b;animation:blink 1s infinite;}
+    .sync-dot.grey{background:#9ca3af;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    .sync-text{font-size:0.7rem;font-weight:600;color:var(--text2);}
+    .sync-text span{color:var(--primary);}
+    .sync-text a{color:var(--primary);}
+
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:30px;left:240px;right:0;height:52px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s,border-color 0.3s;}
+    .topbar-left{display:flex;align-items:center;gap:10px;}
+    .topbar-title{font-weight:700;color:var(--primary);font-size:0.95rem;font-family:'Space Grotesk',sans-serif;}
+    .topbar-sub{font-size:0.72rem;color:var(--text2);}
+    .topbar-right{display:flex;align-items:center;gap:8px;}
+    .topbar-badge{background:var(--primary-light);color:var(--primary);font-size:0.72rem;font-weight:700;padding:5px 10px;border-radius:18px;border:1px solid var(--primary-mid);}
+    .theme-btn{background:none;border:1.5px solid var(--border-green);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .theme-btn:hover{background:var(--primary-light);}
+    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
+
+    /* ── MAIN CONTENT ── */
+    .main-content{margin-left:240px;margin-top:82px;flex:1;min-height:calc(100vh - 82px);}
+
+    /* ── PAGE HEADER ── */
+    .page-header{background:linear-gradient(135deg,var(--primary-light),var(--primary-mid));padding:28px 40px 20px;text-align:center;border-bottom:1px solid var(--border-green);}
+    .page-header h1{font-size:1.85rem;font-weight:800;color:var(--text);margin-bottom:7px;font-family:'Space Grotesk',sans-serif;}
+    .page-header p{color:var(--text2);font-size:0.9rem;}
+
+    /* ── CONTAINER ── */
+    .container{max-width:900px;margin:0 auto;padding:28px 32px;}
+
+    /* ── LOGIN NOTICE ── */
+    .login-notice{background:var(--surface);border:2px dashed var(--border-green);border-radius:14px;padding:16px;text-align:center;margin-bottom:18px;display:none;}
+    .login-notice p{font-size:0.83rem;color:var(--text2);margin-bottom:10px;}
+    .login-notice a{background:var(--primary);color:#fff;text-decoration:none;padding:7px 18px;border-radius:10px;font-size:0.8rem;font-weight:700;}
+
+    /* ── GOAL SELECTOR ── */
+    .goal-selector{background:var(--card-bg);border:2px solid var(--card-border);border-radius:18px;padding:24px;margin-bottom:22px;transition:background 0.3s,border-color 0.3s;}
+    .goal-selector h2{font-size:0.95rem;font-weight:800;color:var(--text);margin-bottom:14px;font-family:'Space Grotesk',sans-serif;}
+    .goal-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .goal-select{flex:1;min-width:200px;padding:10px 14px;border:2px solid var(--border-green);border-radius:12px;font-size:0.88rem;font-family:'Inter',sans-serif;color:var(--text);background:var(--input-bg);cursor:pointer;outline:none;transition:border-color 0.2s;}
+    .goal-select:focus{border-color:var(--primary);}
+    .goal-btn{background:var(--primary);color:#fff;border:none;padding:10px 22px;border-radius:12px;font-weight:700;font-size:0.88rem;cursor:pointer;transition:background 0.2s;}
+    .goal-btn:hover{background:var(--primary-dark);}
+    .clear-btn{background:#fee2e2;color:#dc2626;border:none;padding:10px 16px;border-radius:12px;font-weight:700;font-size:0.83rem;cursor:pointer;}
+    .clear-btn:hover{background:#fecaca;}
+
+    /* ── STATS ── */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--stat-bg);border:1.5px solid var(--card-border);border-radius:14px;padding:16px;text-align:center;transition:background 0.3s;}
+    .stat-card .s-num{font-size:1.6rem;font-weight:800;color:var(--primary);font-family:'Space Grotesk',sans-serif;}
+    .stat-card .s-label{font-size:0.7rem;color:var(--text2);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:14px;padding:18px 22px;margin-bottom:20px;transition:background 0.3s;}
+    .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .progress-title{font-size:0.86rem;font-weight:700;color:var(--text);}
+    .progress-pct{font-size:1.05rem;font-weight:800;color:var(--primary);font-family:'Space Grotesk',sans-serif;}
+    .progress-bar-bg{background:var(--primary-light);border-radius:20px;height:13px;overflow:hidden;}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#059669,#34d399);border-radius:20px;transition:width 0.5s ease;min-width:4px;}
+    .progress-msg{font-size:0.76rem;color:var(--text2);margin-top:7px;text-align:center;}
+
+    /* ── CONGRATS ── */
+    .congrats{background:linear-gradient(135deg,#059669,#047857);border-radius:14px;padding:22px;text-align:center;margin-bottom:20px;display:none;}
+    .congrats h2{font-size:1.2rem;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:5px;}
+    .congrats p{color:#a7f3d0;font-size:0.85rem;}
+
+    /* ── CATEGORY ── */
+    .category{margin-bottom:22px;}
+    .category-header{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+    .cat-icon{font-size:1.1rem;}
+    .cat-title{font-size:0.85rem;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;}
+    .cat-count{margin-left:auto;font-size:0.73rem;font-weight:700;background:var(--primary-light);color:var(--primary);padding:2px 9px;border-radius:9px;}
+
+    /* ── CHECKLIST ITEMS ── */
+    .checklist{display:flex;flex-direction:column;gap:7px;}
+    .check-item{display:flex;align-items:flex-start;gap:13px;background:var(--check-bg);border:1.5px solid var(--check-border);border-radius:13px;padding:13px 15px;cursor:pointer;transition:all 0.2s;user-select:none;}
+    .check-item:hover{border-color:var(--primary);background:var(--primary-light);}
+    .check-item.done{border-color:var(--check-done-border);background:var(--check-done-bg);}
+    .check-item.done .item-title{text-decoration:line-through;color:var(--text2);}
+    .check-item.done .item-desc{color:var(--text2);}
+    .checkbox{width:21px;height:21px;border:2px solid var(--border);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px;}
+    .check-item.done .checkbox{background:var(--primary);border-color:var(--primary);}
+    .check-mark{color:#fff;font-size:0.78rem;font-weight:800;display:none;}
+    .check-item.done .check-mark{display:block;}
+    .item-body{flex:1;}
+    .item-title{font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+    .item-desc{font-size:0.76rem;color:var(--text2);line-height:1.5;}
+    .item-tag{display:inline-block;margin-top:5px;font-size:0.67rem;font-weight:700;padding:2px 7px;border-radius:7px;}
+    .tag-year{background:#dbeafe;color:#1d4ed8;}
+    .tag-cert{background:#fce7f3;color:#be185d;}
+    .tag-skill{background:#fef3c7;color:#92400e;}
+    .tag-job{background:#d1fae5;color:#059669;}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{text-align:center;padding:56px 20px;color:var(--text2);}
+    .empty-icon{font-size:3rem;margin-bottom:14px;}
+    .empty-state h3{font-size:1rem;font-weight:700;color:var(--text2);margin-bottom:7px;}
+
+    /* ── SIDEBAR OVERLAY ── */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150;}
+    .sidebar-overlay.open{display:block;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:700px){
+      .sidebar{transform:translateX(-100%);transition:transform 0.3s;z-index:300;}
+      .sidebar.open{transform:translateX(0);}
+      .sync-bar,.topbar{left:0;}
+      .main-content{margin-left:0;}
+      .hamburger{display:block;}
+      .container{padding:20px 16px;}
+      .stats-row{grid-template-columns:repeat(2,1fr);}
+      .goal-row{flex-direction:column;}
+      .goal-select,.goal-btn,.clear-btn{width:100%;}
+      .page-header{padding:28px 20px 18px;}
+      .page-header h1{font-size:1.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo" onclick="window.location.href='index.html'">🧭 Career<span>Compass</span></div>
+  <div class="sidebar-scroll">
+    <div class="sidebar-section-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a class="nav-item" href="roadmap.html"><span class="nav-icon">🗺️</span> Roadmap</a>
+      <a class="nav-item active" href="progress.html"><span class="nav-icon">✅</span> Progress</a>
+      <a class="nav-item" href="resume.html"><span class="nav-icon">📄</span> Resume</a>
+      <a class="nav-item" href="compare.html"><span class="nav-icon">⚖️</span> Compare</a>
+    </nav>
+    <div class="nav-divider"></div>
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="gamify.html"><span class="nav-icon">🎮</span> My Profile</a>
+      <a class="nav-item" href="chatbot.html"><span class="nav-icon">🤖</span> AI Chat</a>
+      <a class="nav-item" href="buddy.html"><span class="nav-icon">🤝</span> Career Buddy</a>
+      <a class="nav-item" href="login.html"><span class="nav-icon">🔐</span> Login / Sign Up</a>
+    </nav>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-profile" onclick="window.location.href='gamify.html'">
+      <div class="profile-avatar" id="sidebarAvatar">
+  <img id="sidebarAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+  <span id="sidebarAvatarInitial">S</span>
+</div>
+      <div>
+        <div class="profile-name" id="sidebarName">Student</div>
+        <div class="profile-level" id="sidebarLevel">🏅 Login to sync data</div>
+      </div>
+    </div>
+    <button class="sidebar-login-btn" onclick="window.location.href='login.html'">🔐 Login to Save Progress</button>
+  </div>
+</aside>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-dot grey" id="syncDot"></div>
+  <div class="sync-text" id="syncText">Checking login status...</div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div>
+      <div class="topbar-title">✅ Career Progress Tracker</div>
+      <div class="topbar-sub">Track your milestones · Saved to cloud automatically</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">☁️ Cloud Sync</div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="page-header">
+    <h1>✅ Career Progress Tracker</h1>
+    <p>Pick your target career, tick off milestones — saved to cloud automatically!</p>
+  </div>
+
+  <div class="container">
+
+    <!-- LOGIN NOTICE -->
+    <div class="login-notice" id="loginNotice">
+      <p>⚠️ You are not logged in. Progress is saved locally only. Login to save to cloud!</p>
+      <a href="login.html">Login / Sign Up</a>
+    </div>
+
+    <!-- GOAL SELECTOR -->
+    <div class="goal-selector">
+      <h2>🎯 Select Your Target Career</h2>
+      <div class="goal-row">
+        <select class="goal-select" id="careerSelect">
+          <option value="">-- Choose a career path --</option>
+          <optgroup label="💻 Software / CSE / IT">
+            <option value="swe">Software Engineer</option>
+            <option value="fullstack">Full Stack Developer</option>
+            <option value="ds">Data Scientist</option>
+            <option value="da">Data Analyst</option>
+            <option value="aieng">AI Engineer</option>
+            <option value="mleng">Machine Learning Engineer</option>
+            <option value="cloud">Cloud Engineer</option>
+            <option value="devops">DevOps Engineer</option>
+            <option value="ml">ML / AI Engineer (General)</option>
+          </optgroup>
+          <optgroup label="🔐 Cyber Security">
+            <option value="cyberanalyst">Cyber Security Analyst</option>
+            <option value="pentest">Penetration Tester</option>
+            <option value="hacker">Ethical Hacker</option>
+            <option value="soc">SOC Analyst</option>
+          </optgroup>
+          <optgroup label="📡 ECE / Embedded">
+            <option value="embedded">Embedded Systems Engineer</option>
+            <option value="vlsi">VLSI Design Engineer</option>
+            <option value="elec">Electronics Design Engineer</option>
+          </optgroup>
+          <optgroup label="⚡ EEE / Power">
+            <option value="eleceng">Electrical Engineer</option>
+            <option value="power">Power Systems Engineer</option>
+            <option value="renew">Renewable Energy Engineer</option>
+          </optgroup>
+          <optgroup label="⚙️ Mechanical">
+            <option value="design">Mechanical Design Engineer</option>
+            <option value="prod">Production Engineer</option>
+            <option value="cad">CAD Engineer</option>
+          </optgroup>
+          <optgroup label="🏗️ Civil">
+            <option value="site">Site Engineer</option>
+            <option value="struct">Structural Engineer</option>
+          </optgroup>
+          <optgroup label="🚀 Aerospace">
+            <option value="aero">Aerospace / Aerodynamics Engineer</option>
+            <option value="space">Spacecraft Engineer</option>
+          </optgroup>
+          <optgroup label="🧪 Chemical / Biotech">
+            <option value="process">Chemical Process Engineer</option>
+            <option value="biotech">Biotech Engineer</option>
+          </optgroup>
+          <optgroup label="🚢 Marine / Petroleum / Mining">
+            <option value="marine">Marine Engineer</option>
+            <option value="petro">Petroleum Engineer</option>
+            <option value="mine">Mining Engineer</option>
+          </optgroup>
+          <optgroup label="🤖 Robotics / Automation">
+            <option value="robotics">Robotics Engineer</option>
+            <option value="auto">Automation Engineer</option>
+            <option value="plc">PLC/SCADA Engineer</option>
+            <option value="robot">Robotics / Automation Engineer (Combined)</option>
+          </optgroup>
+          <optgroup label="🌾 Agri / Food / Textile">
+            <option value="agri">Agricultural Engineer</option>
+            <option value="foodtech">Food Technologist</option>
+            <option value="textile">Textile Engineer</option>
+          </optgroup>
+          <optgroup label="🏛️ Government / PSU">
+            <option value="psu">PSU / Government Engineer (GATE)</option>
+            <option value="isro">ISRO / DRDO Scientist</option>
+          </optgroup>
+        </select>
+        <button class="goal-btn" onclick="loadCareer()">Load Tracker →</button>
+        <button class="clear-btn" onclick="clearProgress()">↺ Reset Progress</button>
+      </div>
+    </div>
+
+    <!-- CONGRATS -->
+    <div class="congrats" id="congratsBanner">
+      <h2>🎉 100% Complete! You're Ready!</h2>
+      <p>You've completed every milestone. Time to apply and land that job!</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow" style="display:none;">
+      <div class="stat-card"><div class="s-num" id="statTotal">0</div><div class="s-label">Total Tasks</div></div>
+      <div class="stat-card"><div class="s-num" id="statDone">0</div><div class="s-label">Completed</div></div>
+      <div class="stat-card"><div class="s-num" id="statLeft">0</div><div class="s-label">Remaining</div></div>
+      <div class="stat-card"><div class="s-num" id="statPct">0%</div><div class="s-label">Progress</div></div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-top">
+        <div class="progress-title" id="progressTitle">Your Progress</div>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-msg" id="progressMsg">Start ticking tasks to track your journey!</div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div id="checklistArea">
+      <div class="empty-state">
+        <div class="empty-icon">🗺️</div>
+        <h3>No career selected yet</h3>
+        <p>Choose a career path above and click "Load Tracker" to begin your journey!</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyD0KQIXnYg7pMDrQs_Ln3MR-_XNQAlO8uY",
+  authDomain:        "careercompass-2add1.firebaseapp.com",
+  projectId:         "careercompass-2add1",
+  storageBucket:     "careercompass-2add1.firebasestorage.app",
+  messagingSenderId: "877245919412",
+  appId:             "1:877245919412:web:0d05357109934be17ea7e1"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser   = null;
+let currentCareer = null;
+let currentState  = {};
+
+// ── DARK MODE ────────────────────────────────────────────────
+window.toggleTheme = function() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('cc_theme', isDark ? 'light' : 'dark');
+};
+(function(){
+  if (localStorage.getItem('cc_theme') === 'dark') {
+    document.body.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent = '☀️';
+  }
+})();
+
+// ── SIDEBAR ──────────────────────────────────────────────────
+window.toggleSidebar = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+};
+window.closeSidebar = function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+};
+
+// ── SYNC STATUS ───────────────────────────────────────────────
+function setSyncStatus(status, msg) {
+  document.getElementById('syncDot').className = 'sync-dot ' + status;
+  document.getElementById('syncText').innerHTML = msg;
+}
+
+// ── SAVE ──────────────────────────────────────────────────────
+async function saveState(career, state) {
+  localStorage.setItem('cc_progress_' + career, JSON.stringify(state));
+  localStorage.setItem('cc_last_career', career);
+  if (currentUser) {
+    try {
+      setSyncStatus('yellow','Syncing to cloud...');
+      await setDoc(doc(db,'progress',currentUser.uid), {
+        career, tasks: state, updatedAt: serverTimestamp()
+      });
+      setSyncStatus('green','✅ Synced as <span>'+(currentUser.displayName||currentUser.email)+'</span>');
+    } catch(err) {
+      setSyncStatus('grey','⚠️ Cloud sync failed — saved locally');
+      console.error(err);
+    }
+  }
+}
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadState(career) {
+  if (currentUser) {
+    try {
+      const snap = await getDoc(doc(db,'progress',currentUser.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.career === career && data.tasks) return data.tasks;
+      }
+    } catch(err) { console.warn('Firestore load failed:', err); }
+  }
+  try { return JSON.parse(localStorage.getItem('cc_progress_' + career) || '{}'); }
+  catch(e) { return {}; }
+}
+
+// ── CAREER DATA ───────────────────────────────────────────────
+const careerData = {
+  swe:{
+    title:'Software Engineer', emoji:'💻',
+    categories:[
+      {icon:'📚',title:'Foundation (Year 1–2)',items:[
+        {id:'swe_c1',title:'Learn C or Java basics',desc:'Understand variables, loops, functions, arrays',tag:'tag-year',tagText:'Year 1'},
+        {id:'swe_c2',title:'Master OOP concepts',desc:'Classes, objects, inheritance, polymorphism',tag:'tag-year',tagText:'Year 1'},
+        {id:'swe_c3',title:'Learn DSA — Arrays & Linked Lists',desc:'Practice on GeeksforGeeks',tag:'tag-skill',tagText:'DSA'},
+        {id:'swe_c4',title:'Learn DSA — Trees & Graphs',desc:'BFS, DFS, Binary Trees, shortest path',tag:'tag-skill',tagText:'DSA'},
+        {id:'swe_c5',title:'Learn Git & GitHub',desc:'Clone, commit, push, pull, branching basics',tag:'tag-skill',tagText:'Tool'},
+      ]},
+      {icon:'🛠️',title:'Building Skills (Year 2–3)',items:[
+        {id:'swe_b1',title:'Learn HTML, CSS, JavaScript basics',desc:'Build 2–3 static websites',tag:'tag-skill',tagText:'Web'},
+        {id:'swe_b2',title:'Learn a backend language',desc:'Node.js, Java Spring, or Python Django',tag:'tag-skill',tagText:'Backend'},
+        {id:'swe_b3',title:'Learn DBMS & SQL basics',desc:'MySQL or PostgreSQL — queries, joins, normalization',tag:'tag-skill',tagText:'DB'},
+        {id:'swe_b4',title:'Build 2 full projects',desc:'Publish both on GitHub with README',tag:'tag-skill',tagText:'Project'},
+        {id:'swe_b5',title:'Get an internship',desc:'Apply via Internshala or campus portal',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'🏆',title:'Placement Prep (Year 3–4)',items:[
+        {id:'swe_p1',title:'Solve 150+ LeetCode problems',desc:'At least 50 medium difficulty',tag:'tag-skill',tagText:'DSA'},
+        {id:'swe_p2',title:'Learn System Design basics',desc:'Load balancing, caching, databases at scale',tag:'tag-skill',tagText:'Design'},
+        {id:'swe_p3',title:'Prepare a strong resume',desc:'1 page, clear projects, skills section',tag:'tag-job',tagText:'Resume'},
+        {id:'swe_p4',title:'Do 5 mock interviews',desc:'Use InterviewBit or college seniors',tag:'tag-job',tagText:'Interview'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'swe_cert1',title:'AWS Cloud Practitioner',desc:'Official cert — builds cloud fundamentals',tag:'tag-cert',tagText:'Cert'},
+        {id:'swe_cert2',title:'Meta Front-End Developer (Coursera)',desc:'Full frontend development path',tag:'tag-cert',tagText:'Cert'},
+        {id:'swe_cert3',title:'Oracle Java Certification',desc:'Industry-recognised Java proficiency cert',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  ds:{
+    title:'Data Scientist', emoji:'📊',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'ds_c1',title:'Learn Python thoroughly',desc:'Lists, dicts, functions, file handling, OOP',tag:'tag-year',tagText:'Year 1'},
+        {id:'ds_c2',title:'Study Statistics & Probability',desc:'Mean, variance, distributions, hypothesis testing',tag:'tag-skill',tagText:'Math'},
+        {id:'ds_c3',title:'Learn Linear Algebra basics',desc:'Vectors, matrices, eigenvalues — Khan Academy',tag:'tag-skill',tagText:'Math'},
+        {id:'ds_c4',title:'Learn SQL',desc:'SELECT, JOIN, GROUP BY — practice on LeetCode SQL',tag:'tag-skill',tagText:'SQL'},
+      ]},
+      {icon:'🛠️',title:'Core Data Skills',items:[
+        {id:'ds_b1',title:'Learn NumPy & Pandas',desc:'Data wrangling, filtering, groupby operations',tag:'tag-skill',tagText:'Python'},
+        {id:'ds_b2',title:'Learn Scikit-learn ML library',desc:'Regression, classification, clustering, pipelines',tag:'tag-skill',tagText:'ML'},
+        {id:'ds_b3',title:'Learn Data Visualization',desc:'Matplotlib, Seaborn, Tableau basics',tag:'tag-skill',tagText:'Viz'},
+        {id:'ds_b4',title:'Complete 3 Kaggle datasets',desc:'EDA + model building + submission',tag:'tag-skill',tagText:'Project'},
+        {id:'ds_b5',title:'Get a data analytics internship',desc:'Apply to analytics firms via LinkedIn/Naukri',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'ds_cert1',title:'Google Data Analytics (Coursera)',desc:'8-course professional certificate by Google',tag:'tag-cert',tagText:'Cert'},
+        {id:'ds_cert2',title:'IBM Data Science Professional',desc:'10-course path covering Python, ML, SQL',tag:'tag-cert',tagText:'Cert'},
+        {id:'ds_cert3',title:'TensorFlow Developer Certificate',desc:'Official Google cert for ML/DL skills',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  cloud:{
+    title:'Cloud Engineer', emoji:'☁️',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'cl_c1',title:'Learn Linux & Bash scripting',desc:'File system, processes, shell scripts',tag:'tag-year',tagText:'Year 1'},
+        {id:'cl_c2',title:'Learn networking fundamentals',desc:'IP, DNS, HTTP, TCP/UDP, subnetting',tag:'tag-skill',tagText:'Network'},
+        {id:'cl_c3',title:'Create AWS Free Tier account',desc:'Explore EC2, S3, IAM, VPC services',tag:'tag-skill',tagText:'AWS'},
+      ]},
+      {icon:'🛠️',title:'Cloud Skills',items:[
+        {id:'cl_b1',title:'Deploy a project on AWS EC2',desc:'Set up a web server from scratch',tag:'tag-skill',tagText:'AWS'},
+        {id:'cl_b2',title:'Learn Docker basics',desc:'Images, containers, Dockerfile, docker-compose',tag:'tag-skill',tagText:'Docker'},
+        {id:'cl_b3',title:'Learn Kubernetes basics',desc:'Pods, services, deployments, kubectl',tag:'tag-skill',tagText:'K8s'},
+        {id:'cl_b4',title:'Learn Terraform (IaC)',desc:'Write infrastructure as code',tag:'tag-skill',tagText:'IaC'},
+        {id:'cl_b5',title:'Do a cloud internship',desc:'AWS/Azure roles on Naukri or LinkedIn',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'cl_cert1',title:'AWS Solutions Architect Associate',desc:'Most valued AWS cert — industry gold standard',tag:'tag-cert',tagText:'Cert'},
+        {id:'cl_cert2',title:'Azure Fundamentals AZ-900',desc:'Entry-level Microsoft Azure cert',tag:'tag-cert',tagText:'Cert'},
+        {id:'cl_cert3',title:'HashiCorp Terraform Associate',desc:'Infrastructure automation certification',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  devops:{
+    title:'DevOps Engineer', emoji:'🔄',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'dv_c1',title:'Master Linux & Shell scripting',desc:'Automation scripts, cron jobs, system admin',tag:'tag-year',tagText:'Year 1'},
+        {id:'dv_c2',title:'Master Git workflows',desc:'Branching, merging, PRs, CI/CD with Git',tag:'tag-skill',tagText:'Git'},
+      ]},
+      {icon:'🛠️',title:'DevOps Core Skills',items:[
+        {id:'dv_b1',title:'Learn Docker',desc:'Build, run, push container images',tag:'tag-skill',tagText:'Docker'},
+        {id:'dv_b2',title:'Set up a Jenkins CI/CD pipeline',desc:'Automate build-test-deploy workflow',tag:'tag-skill',tagText:'CI/CD'},
+        {id:'dv_b3',title:'Learn Kubernetes',desc:'Deploy apps on K8s cluster',tag:'tag-skill',tagText:'K8s'},
+        {id:'dv_b4',title:'Learn Ansible or Terraform',desc:'Configuration management and IaC',tag:'tag-skill',tagText:'IaC'},
+        {id:'dv_b5',title:'Build a complete DevOps pipeline',desc:'Publish project with CI/CD on GitHub Actions',tag:'tag-skill',tagText:'Project'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'dv_cert1',title:'Docker Certified Associate',desc:'Official Docker DCA exam',tag:'tag-cert',tagText:'Cert'},
+        {id:'dv_cert2',title:'Kubernetes CKA',desc:'Linux Foundation Kubernetes Admin cert',tag:'tag-cert',tagText:'Cert'},
+        {id:'dv_cert3',title:'AWS DevOps Professional',desc:'Advanced AWS DevOps certification',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  fullstack:{
+    title:'Full Stack Developer', emoji:'🌐',
+    categories:[
+      {icon:'📚',title:'Frontend Basics',items:[
+        {id:'fs_c1',title:'Learn HTML & CSS thoroughly',desc:'Semantic HTML, Flexbox, Grid, responsive design',tag:'tag-year',tagText:'Year 1'},
+        {id:'fs_c2',title:'Master JavaScript',desc:'DOM, events, ES6+ features, fetch API',tag:'tag-skill',tagText:'JS'},
+        {id:'fs_c3',title:'Build 3 frontend projects',desc:'Portfolio, landing page, interactive UI',tag:'tag-skill',tagText:'Project'},
+      ]},
+      {icon:'🛠️',title:'Full Stack Skills',items:[
+        {id:'fs_b1',title:'Learn React.js',desc:'Components, hooks, state management, routing',tag:'tag-skill',tagText:'React'},
+        {id:'fs_b2',title:'Learn Node.js & Express',desc:'REST APIs, middleware, authentication with JWT',tag:'tag-skill',tagText:'Node'},
+        {id:'fs_b3',title:'Learn MongoDB or MySQL',desc:'CRUD operations, schema design, Mongoose ODM',tag:'tag-skill',tagText:'DB'},
+        {id:'fs_b4',title:'Build & deploy a full stack app',desc:'Deploy frontend on Vercel, backend on Render',tag:'tag-skill',tagText:'Deploy'},
+        {id:'fs_b5',title:'Get a web dev internship',desc:'Apply on Internshala or AngelList',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'fs_cert1',title:'Meta Front-End Developer',desc:'Coursera professional certificate by Meta',tag:'tag-cert',tagText:'Cert'},
+        {id:'fs_cert2',title:'freeCodeCamp Full Stack Cert',desc:'Free — covers HTML, CSS, JS, React, Node',tag:'tag-cert',tagText:'Cert'},
+        {id:'fs_cert3',title:'MongoDB Developer Certification',desc:'Official MongoDB associate developer cert',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  ml:{
+    title:'ML / AI Engineer', emoji:'🧠',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'ml_c1',title:'Master Python',desc:'NumPy, Pandas, Matplotlib — data handling',tag:'tag-year',tagText:'Year 1'},
+        {id:'ml_c2',title:'Study Linear Algebra & Statistics',desc:'Essential math for ML — Khan Academy & 3B1B',tag:'tag-skill',tagText:'Math'},
+        {id:'ml_c3',title:'Complete Andrew Ng ML Course',desc:'Coursera Machine Learning Specialization',tag:'tag-cert',tagText:'Course'},
+      ]},
+      {icon:'🛠️',title:'ML Core Skills',items:[
+        {id:'ml_b1',title:'Learn Scikit-learn',desc:'Regression, SVM, Random Forest, cross-validation',tag:'tag-skill',tagText:'ML'},
+        {id:'ml_b2',title:'Learn TensorFlow or PyTorch',desc:'Build and train neural networks',tag:'tag-skill',tagText:'DL'},
+        {id:'ml_b3',title:'Build 3 ML projects',desc:'One on CV, one on NLP, one on tabular data',tag:'tag-skill',tagText:'Project'},
+        {id:'ml_b4',title:'Compete on Kaggle',desc:'Aim for top 30% in at least 1 competition',tag:'tag-skill',tagText:'Kaggle'},
+        {id:'ml_b5',title:'Get an ML/data internship',desc:'Target AI-first companies and research labs',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'ml_cert1',title:'Deep Learning Specialization',desc:'Andrew Ng — 5 courses covering full DL stack',tag:'tag-cert',tagText:'Cert'},
+        {id:'ml_cert2',title:'TensorFlow Developer Certificate',desc:'Official Google exam — highly valued',tag:'tag-cert',tagText:'Cert'},
+        {id:'ml_cert3',title:'Fast.ai Practical Deep Learning',desc:'Free — project-first approach to DL',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  pentest:{
+    title:'Penetration Tester', emoji:'💉',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'pt_c1',title:'Learn networking deeply',desc:'TCP/IP, OSI model, DNS, HTTP, subnetting, Wireshark',tag:'tag-year',tagText:'Year 1'},
+        {id:'pt_c2',title:'Learn Linux (Kali Linux)',desc:'File system, permissions, terminal commands',tag:'tag-skill',tagText:'Linux'},
+        {id:'pt_c3',title:'Learn Python scripting',desc:'Write scripts for automation and scanning',tag:'tag-skill',tagText:'Python'},
+      ]},
+      {icon:'🛠️',title:'Hacking Skills',items:[
+        {id:'pt_b1',title:'Practice on TryHackMe',desc:'Complete beginner + junior pen tester paths',tag:'tag-skill',tagText:'Lab'},
+        {id:'pt_b2',title:'Practice on HackTheBox',desc:'Solve 10+ machines at easy/medium level',tag:'tag-skill',tagText:'Lab'},
+        {id:'pt_b3',title:'Learn Burp Suite for web hacking',desc:'Intercept requests, find OWASP Top 10 vulns',tag:'tag-skill',tagText:'Tool'},
+        {id:'pt_b4',title:'Learn Metasploit Framework',desc:'Exploitation, post-exploitation, payloads',tag:'tag-skill',tagText:'Tool'},
+        {id:'pt_b5',title:'Submit 1 Bug Bounty report',desc:'HackerOne or Bugcrowd — even a low-severity one',tag:'tag-job',tagText:'Bug Bounty'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'pt_cert1',title:'CompTIA Security+',desc:'Entry-level security cert — great starting point',tag:'tag-cert',tagText:'Cert'},
+        {id:'pt_cert2',title:'eJPT – eLearnSecurity',desc:'Beginner pen testing certification',tag:'tag-cert',tagText:'Cert'},
+        {id:'pt_cert3',title:'OSCP – Offensive Security',desc:'The gold standard — get after 1–2 years',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  soc:{
+    title:'SOC Analyst', emoji:'🛡️',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'sc_c1',title:'Learn networking basics',desc:'TCP/IP, DNS, HTTP, firewall concepts',tag:'tag-year',tagText:'Year 1'},
+        {id:'sc_c2',title:'Learn Windows & Linux OS basics',desc:'File systems, processes, user permissions',tag:'tag-skill',tagText:'OS'},
+      ]},
+      {icon:'🛠️',title:'SOC Core Skills',items:[
+        {id:'sc_b1',title:'Learn Splunk SIEM basics',desc:'Log ingestion, searches, dashboards, alerts',tag:'tag-skill',tagText:'SIEM'},
+        {id:'sc_b2',title:'Complete TryHackMe SOC Level 1',desc:'Free learning path for SOC analysts',tag:'tag-skill',tagText:'Lab'},
+        {id:'sc_b3',title:'Study MITRE ATT&CK Framework',desc:'Learn attacker tactics, techniques, procedures',tag:'tag-skill',tagText:'Threat Intel'},
+        {id:'sc_b4',title:'Practice incident response',desc:'Work through mock IR scenarios on TryHackMe',tag:'tag-skill',tagText:'IR'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'sc_cert1',title:'CompTIA Security+',desc:'Foundation security cert — required by many firms',tag:'tag-cert',tagText:'Cert'},
+        {id:'sc_cert2',title:'Certified SOC Analyst (CSA)',desc:'EC-Council SOC analyst certification',tag:'tag-cert',tagText:'Cert'},
+        {id:'sc_cert3',title:'Microsoft SC-200',desc:'Microsoft Security Operations Analyst cert',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  embedded:{
+    title:'Embedded Systems Engineer', emoji:'🔌',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'em_c1',title:'Master C programming',desc:'Pointers, memory management, bit manipulation',tag:'tag-year',tagText:'Year 1'},
+        {id:'em_c2',title:'Study Digital Electronics',desc:'Logic gates, flip-flops, counters',tag:'tag-skill',tagText:'Electronics'},
+        {id:'em_c3',title:'Learn Microcontroller basics',desc:'Start with Arduino — GPIO, timers, interrupts',tag:'tag-skill',tagText:'MCU'},
+      ]},
+      {icon:'🛠️',title:'Embedded Skills',items:[
+        {id:'em_b1',title:'Build 3 Arduino/STM32 projects',desc:'Sensor interfacing, motor control, display',tag:'tag-skill',tagText:'Project'},
+        {id:'em_b2',title:'Learn communication protocols',desc:'UART, SPI, I2C — implement on hardware',tag:'tag-skill',tagText:'Protocols'},
+        {id:'em_b3',title:'Learn FreeRTOS basics',desc:'Tasks, semaphores, queues in RTOS',tag:'tag-skill',tagText:'RTOS'},
+        {id:'em_b4',title:'Do an embedded systems internship',desc:'Target Bosch, TI, Tata Elxsi',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'em_cert1',title:'NPTEL Embedded Systems',desc:'Free NPTEL course with certification',tag:'tag-cert',tagText:'Cert'},
+        {id:'em_cert2',title:'ARM Cortex-M Course (Udemy)',desc:'Industry-relevant embedded systems course',tag:'tag-cert',tagText:'Cert'},
+        {id:'em_cert3',title:'Texas Instruments Training',desc:'Free official training on TI microcontrollers',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  vlsi:{
+    title:'VLSI Design Engineer', emoji:'🔬',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'vl_c1',title:'Master Digital Electronics',desc:'Boolean algebra, K-maps, combinational circuits',tag:'tag-year',tagText:'Year 1'},
+        {id:'vl_c2',title:'Learn Verilog HDL',desc:'Write modules, testbenches, simulate circuits',tag:'tag-skill',tagText:'Verilog'},
+        {id:'vl_c3',title:'Learn CMOS basics',desc:'MOSFETs, logic gates at transistor level',tag:'tag-skill',tagText:'CMOS'},
+      ]},
+      {icon:'🛠️',title:'VLSI Skills',items:[
+        {id:'vl_b1',title:'Simulate circuits on ModelSim',desc:'Write and verify Verilog/VHDL designs',tag:'tag-skill',tagText:'Simulation'},
+        {id:'vl_b2',title:'Learn FPGA programming',desc:'Implement designs on Xilinx/Intel FPGA',tag:'tag-skill',tagText:'FPGA'},
+        {id:'vl_b3',title:'Do VLSI internship or project',desc:'VLSI internships at semiconductor firms',tag:'tag-job',tagText:'Internship'},
+        {id:'vl_b4',title:'Prepare GATE ECE',desc:'GATE score is essential for M.Tech VLSI at IIT/NIT',tag:'tag-skill',tagText:'GATE'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'vl_cert1',title:'NPTEL VLSI Design',desc:'Free certification course from IIT professors',tag:'tag-cert',tagText:'Cert'},
+        {id:'vl_cert2',title:'VLSI & Verilog (Udemy)',desc:'Practical Verilog course with projects',tag:'tag-cert',tagText:'Cert'},
+        {id:'vl_cert3',title:'Cadence Academic Training',desc:'Industry standard EDA tool training',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  design:{
+    title:'Design Engineer (Mechanical)', emoji:'✏️',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'de_c1',title:'Learn Engineering Drawing',desc:'Orthographic, isometric views, GD&T basics',tag:'tag-year',tagText:'Year 1'},
+        {id:'de_c2',title:'Learn AutoCAD 2D',desc:'Draw and dimension mechanical components',tag:'tag-skill',tagText:'CAD'},
+      ]},
+      {icon:'🛠️',title:'Design Skills',items:[
+        {id:'de_b1',title:'Learn SolidWorks 3D modeling',desc:'Parts, assemblies, drawings — student version free',tag:'tag-skill',tagText:'SolidWorks'},
+        {id:'de_b2',title:'Build 5 mechanical designs',desc:'Bracket, gear assembly, shaft, housing, frame',tag:'tag-skill',tagText:'Project'},
+        {id:'de_b3',title:'Learn FEA with ANSYS Student',desc:'Stress analysis on mechanical components',tag:'tag-skill',tagText:'FEA'},
+        {id:'de_b4',title:'Do a core mechanical internship',desc:'Target automotive or manufacturing companies',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'de_cert1',title:'SolidWorks CSWA Certification',desc:'Globally recognised CAD certification',tag:'tag-cert',tagText:'Cert'},
+        {id:'de_cert2',title:'CATIA V5 Certification',desc:'Used in aerospace and automotive industry',tag:'tag-cert',tagText:'Cert'},
+        {id:'de_cert3',title:'NPTEL Product Design',desc:'Free NPTEL course on product design principles',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  robot:{
+    title:'Robotics / Automation Engineer', emoji:'🤖',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'rb_c1',title:'Learn C/C++ & Python',desc:'Core languages for robotics programming',tag:'tag-year',tagText:'Year 1'},
+        {id:'rb_c2',title:'Study Control Systems',desc:'PID control, transfer functions, stability',tag:'tag-skill',tagText:'Controls'},
+        {id:'rb_c3',title:'Learn Arduino & Raspberry Pi',desc:'Build simple mechatronic systems',tag:'tag-skill',tagText:'Hardware'},
+      ]},
+      {icon:'🛠️',title:'Robotics Skills',items:[
+        {id:'rb_b1',title:'Learn ROS (Robot Operating System)',desc:'Nodes, topics, services — ROS2 preferred',tag:'tag-skill',tagText:'ROS'},
+        {id:'rb_b2',title:'Build a mobile robot project',desc:'Line follower, obstacle avoider, or pick & place',tag:'tag-skill',tagText:'Project'},
+        {id:'rb_b3',title:'Learn PLC & SCADA basics',desc:'Industrial automation — Siemens or Allen Bradley',tag:'tag-skill',tagText:'PLC'},
+        {id:'rb_b4',title:'Do an automation internship',desc:'Target ABB, Fanuc, Siemens, or auto companies',tag:'tag-job',tagText:'Internship'},
+      ]},
+      {icon:'📜',title:'Certifications',items:[
+        {id:'rb_cert1',title:'NPTEL Robotics Course',desc:'Free IIT course on robotics & automation',tag:'tag-cert',tagText:'Cert'},
+        {id:'rb_cert2',title:'Coursera Robotics Specialization',desc:'UPenn robotics — aerial, mobility, estimation',tag:'tag-cert',tagText:'Cert'},
+        {id:'rb_cert3',title:'Siemens TIA Portal Training',desc:'Industrial PLC programming certification',tag:'tag-cert',tagText:'Cert'},
+      ]},
+    ]
+  },
+  psu:{
+    title:'PSU / Government Engineer (GATE)', emoji:'🏛️',
+    categories:[
+      {icon:'📚',title:'Academic Foundation',items:[
+        {id:'ps_c1',title:'Maintain CGPA above 7.5',desc:'Consistent academic performance matters for PSU',tag:'tag-year',tagText:'Academics'},
+        {id:'ps_c2',title:'Study core branch subjects deeply',desc:'GATE tests fundamentals — no shortcuts',tag:'tag-skill',tagText:'Core'},
+        {id:'ps_c3',title:'Complete NPTEL courses in core area',desc:'Free + certificate — adds to resume',tag:'tag-cert',tagText:'NPTEL'},
+      ]},
+      {icon:'🛠️',title:'GATE Preparation',items:[
+        {id:'ps_b1',title:'Start GATE prep from Year 3',desc:'2–3 hours daily alongside regular studies',tag:'tag-skill',tagText:'GATE'},
+        {id:'ps_b2',title:'Complete all GATE subjects',desc:'Cover full syllabus — no topics skipped',tag:'tag-skill',tagText:'GATE'},
+        {id:'ps_b3',title:'Solve 10 previous year papers',desc:'GATE PYQ 2015–2024 — timed full tests',tag:'tag-skill',tagText:'Practice'},
+        {id:'ps_b4',title:'Join a GATE test series',desc:'MADE EASY or ACE Academy test series',tag:'tag-skill',tagText:'Test Series'},
+        {id:'ps_b5',title:'Achieve GATE score above 650',desc:'650+ is needed for top PSUs like BHEL, NTPC',tag:'tag-job',tagText:'Target'},
+      ]},
+      {icon:'🏆',title:'PSU Applications',items:[
+        {id:'ps_p1',title:'Apply to BHEL / NTPC / ONGC',desc:'Applications open after GATE results',tag:'tag-job',tagText:'PSU'},
+        {id:'ps_p2',title:'Apply to ISRO / DRDO / HAL',desc:'Separate written test + GATE score required',tag:'tag-job',tagText:'Defence'},
+        {id:'ps_p3',title:'Prepare for PSU GD & Interview',desc:'Technical + HR round after written test',tag:'tag-job',tagText:'Interview'},
+      ]},
+    ]
+  },
+  isro:{
+    title:'ISRO / DRDO Scientist', emoji:'🚀',
+    categories:[
+      {icon:'📚',title:'Foundation',items:[
+        {id:'is_c1',title:'Build strong Math & Physics base',desc:'Calculus, mechanics, thermodynamics, control systems',tag:'tag-year',tagText:'Year 1'},
+        {id:'is_c2',title:'Learn MATLAB & Simulink',desc:'Used heavily in aerospace simulation & design',tag:'tag-skill',tagText:'MATLAB'},
+        {id:'is_c3',title:'Complete NPTEL Aerospace courses',desc:'Free IIT lectures on aerospace engineering',tag:'tag-cert',tagText:'NPTEL'},
+        {id:'is_c4',title:'Complete ISRO IIRS free courses',desc:'Free satellite & remote sensing courses by ISRO',tag:'tag-cert',tagText:'ISRO'},
+      ]},
+      {icon:'🛠️',title:'GATE Preparation',items:[
+        {id:'is_b1',title:'Start GATE AE / ME prep from Year 3',desc:'GATE AE for Aerospace, GATE ME for Mechanical ISRO',tag:'tag-skill',tagText:'GATE'},
+        {id:'is_b2',title:'Solve GATE AE previous year papers',desc:'2015–2024 PYQs — full timed tests',tag:'tag-skill',tagText:'Practice'},
+        {id:'is_b3',title:'Achieve GATE score above 700',desc:'700+ score significantly improves ISRO chances',tag:'tag-job',tagText:'Target'},
+      ]},
+      {icon:'🏆',title:'ISRO / DRDO Exam',items:[
+        {id:'is_p1',title:'Apply to ISRO ICRB after GATE',desc:'Watch isro.gov.in for recruitment notifications',tag:'tag-job',tagText:'ISRO'},
+        {id:'is_p2',title:'Prepare for ISRO written test',desc:'Domain knowledge + aptitude + general awareness',tag:'tag-job',tagText:'Exam'},
+        {id:'is_p3',title:'Prepare for ISRO interview',desc:'Technical depth in your specialisation domain',tag:'tag-job',tagText:'Interview'},
+        {id:'is_p4',title:'Apply to DRDO SET exam',desc:'DRDO Scientist Entry Test — separate from GATE',tag:'tag-job',tagText:'DRDO'},
+      ]},
+    ]
+  },
+};
+
+// ── AUTO-GENERATED TRACKERS (kept in sync with Roadmap page) ──
+// Source data mirrors the `roadmaps` object in roadmap.html so every
+// career path available on the Roadmap page also has a Progress tracker.
+const autoRoadmapData = {
+  aieng:{emoji:'🤖',title:'AI Engineer',
+    skills:['Python','TensorFlow/PyTorch','Deep Learning','NLP','Computer Vision','MLOps','Cloud AI'],
+    certs:['Deep Learning Specialization – Andrew Ng','TensorFlow Developer Cert','AWS ML Specialty'],
+    steps:[
+      {title:'Python + Math Foundation',desc:'Master Python, linear algebra, calculus, statistics.'},
+      {title:'ML Fundamentals',desc:'Andrew Ng ML course, implement algorithms from scratch.'},
+      {title:'Deep Learning',desc:'TensorFlow or PyTorch. Build CNN, RNN, Transformer models.'},
+      {title:'Specialise',desc:'Choose NLP, Computer Vision or Generative AI. Build a portfolio project.'},
+      {title:'MLOps & Cloud',desc:'Deploy models on AWS/GCP. Learn Docker, FastAPI for serving models.'}
+    ]},
+  mleng:{emoji:'🧠',title:'Machine Learning Engineer',
+    skills:['Python','Scikit-learn','TensorFlow/PyTorch','Feature Engineering','Model Deployment','Docker','SQL'],
+    certs:['Machine Learning Specialization – Andrew Ng','TensorFlow Developer','AWS ML Specialty'],
+    steps:[
+      {title:'Python & Statistics',desc:'Strong Python skills, probability, statistics, linear algebra.'},
+      {title:'Classical ML',desc:'All Scikit-learn algorithms with real datasets. Kaggle participation.'},
+      {title:'Deep Learning',desc:'Neural networks, CNNs, LSTMs, attention mechanisms.'},
+      {title:'Build & Deploy',desc:'FastAPI + Docker to serve ML models. MLflow for tracking experiments.'},
+      {title:'Specialise & Publish',desc:'Kaggle top 10%, GitHub portfolio, research paper (optional).'}
+    ]},
+  da:{emoji:'📈',title:'Data Analyst',
+    skills:['Excel','SQL','Python/R','Tableau/Power BI','Statistics','Data Cleaning','Storytelling'],
+    certs:['Google Data Analytics','Microsoft Power BI Cert','IBM Data Analyst Professional'],
+    steps:[
+      {title:'Excel & SQL First',desc:'Advanced Excel, pivot tables, SQL queries with GROUP BY, JOIN.'},
+      {title:'Python for Analysis',desc:'Pandas, Matplotlib, Seaborn. Analyze 5 real-world datasets.'},
+      {title:'Visualization',desc:'Tableau or Power BI — build 3 dashboards for portfolio.'},
+      {title:'Statistics',desc:'A/B testing, hypothesis testing, regression basics.'},
+      {title:'Get Hired',desc:'Apply to business analyst and data analyst roles at analytics firms.'}
+    ]},
+  cyberanalyst:{emoji:'🛡️',title:'Cyber Security Analyst',
+    skills:['Network Security','SIEM (Splunk)','Incident Response','Firewalls','OWASP','Wireshark','Linux'],
+    certs:['CompTIA Security+','Certified SOC Analyst (CSA)','Microsoft SC-200'],
+    steps:[
+      {title:'Networking Basics',desc:'TCP/IP, OSI model, DNS, HTTP, subnetting — must know deeply.'},
+      {title:'Linux + Windows Security',desc:'File permissions, process monitoring, log analysis.'},
+      {title:'SIEM & Monitoring',desc:'Splunk basics, SIEM tools, creating dashboards and alerts.'},
+      {title:'Threat Intelligence',desc:'MITRE ATT&CK framework, IOCs, incident response procedures.'},
+      {title:'Get Certified & Hired',desc:'CompTIA Security+ + CSA. Apply to SOC analyst roles at MNCs.'}
+    ]},
+  hacker:{emoji:'🔓',title:'Ethical Hacker',
+    skills:['Kali Linux','Metasploit','Burp Suite','Python','Networking','OWASP','Social Engineering'],
+    certs:['CEH (Certified Ethical Hacker)','eJPT','OSCP'],
+    steps:[
+      {title:'Build Networking Foundation',desc:'OSI model, TCP/IP, DNS, firewalls, IDS/IPS.'},
+      {title:'Linux & Scripting',desc:'Kali Linux, bash scripting, Python for automation.'},
+      {title:'Hacking Labs',desc:'TryHackMe beginner path, then HackTheBox easy machines.'},
+      {title:'Web & Network Attacks',desc:'XSS, SQLi, CSRF, privilege escalation, lateral movement.'},
+      {title:'Certify & Bug Bounty',desc:'CEH or eJPT cert. Start bug bounty on HackerOne.'}
+    ]},
+  elec:{emoji:'⚡',title:'Electronics Design Engineer',
+    skills:['Circuit Design','PCB Design (Altium/Eagle)','Analog Electronics','Op-Amps','Oscilloscope','MATLAB','Spice Simulation'],
+    certs:['NPTEL Analog Electronics','PCB Design Course (Udemy)'],
+    steps:[
+      {title:'Electronics Fundamentals',desc:'Diodes, transistors, op-amps, filters — build circuits on breadboard.'},
+      {title:'PCB Design',desc:'KiCad (free) or Altium — design and fabricate a PCB.'},
+      {title:'Simulation',desc:'LTSpice or Proteus — simulate circuits before building.'},
+      {title:'Internship',desc:'Target electronics manufacturing companies or defence PSUs.'},
+      {title:'Specialize',desc:'Choose analog, digital, or power electronics as specialization.'}
+    ]},
+  eleceng:{emoji:'⚡',title:'Electrical Engineer',
+    skills:['Power Systems','Electrical Machines','Control Systems','AutoCAD Electrical','MATLAB/Simulink','PLC basics'],
+    certs:['NPTEL Electrical Machines','GATE EE Preparation','AutoCAD Electrical Cert'],
+    steps:[
+      {title:'Core Subjects',desc:'Master electrical machines, power systems, control systems for GATE/jobs.'},
+      {title:'AutoCAD Electrical',desc:'Design electrical schematics and panel layouts.'},
+      {title:'PLC/SCADA Basics',desc:'Learn Siemens or Allen Bradley PLC basics for industrial roles.'},
+      {title:'GATE Preparation',desc:'Target GATE EE for PSU roles (BHEL, NTPC, PowerGrid).'},
+      {title:'Apply to PSUs',desc:'GATE score + technical interview. PSU salary ₹8L–₹15L fresher.'}
+    ]},
+  power:{emoji:'🔌',title:'Power Systems Engineer',
+    skills:['Power Systems Analysis','Load Flow','ETAP Software','Switchgear','Transformers','Protection Systems','MATLAB'],
+    certs:['GATE EE','NPTEL Power Systems','ETAP Training'],
+    steps:[
+      {title:'Power Systems Theory',desc:'Load flow, fault analysis, protection — study deeply.'},
+      {title:'Software Tools',desc:'ETAP for power system simulation. AutoCAD for drawings.'},
+      {title:'GATE EE',desc:'Score 600+ for NTPC, PowerGrid, BHEL recruitment.'},
+      {title:'Apply to PSUs',desc:'PSU applications open after GATE. Good salary + job security.'},
+      {title:'Field Experience',desc:'Substation visits, transformer testing, protection relay setup.'}
+    ]},
+  renew:{emoji:'☀️',title:'Renewable Energy Engineer',
+    skills:['Solar PV Design','Wind Energy','MATLAB/Simulink','AutoCAD','Grid Integration','Energy Storage','PVsyst'],
+    certs:['NPTEL Solar Energy','Renewable Energy Certification (Coursera)','NABCEP (solar)'],
+    steps:[
+      {title:'Renewable Energy Basics',desc:'Solar, wind, hydro, biomass — understand each technology.'},
+      {title:'PVsyst Software',desc:'Design solar plants using PVsyst simulation tool.'},
+      {title:'Grid Integration',desc:'Learn how renewables connect to the grid, inverters, storage.'},
+      {title:'Project Internship',desc:'Intern at solar EPC companies or wind farms.'},
+      {title:'Get Hired',desc:'India is growing fast in renewables — strong demand for freshers.'}
+    ]},
+  prod:{emoji:'🏭',title:'Production Engineer',
+    skills:['Production Planning','Lean Manufacturing','Six Sigma','AutoCAD','Quality Tools','ERP Systems','CNC Basics'],
+    certs:['Six Sigma Green Belt','Lean Manufacturing (Coursera)','NPTEL Manufacturing'],
+    steps:[
+      {title:'Manufacturing Processes',desc:'Casting, forging, machining, welding — understand all processes.'},
+      {title:'Lean & Six Sigma',desc:'5S, Kaizen, DMAIC. Six Sigma Green Belt is highly valued.'},
+      {title:'Quality Tools',desc:'SPC, Pareto chart, fishbone, FMEA — learn quality control tools.'},
+      {title:'ERP Basics',desc:'SAP MM or Production Planning module basics.'},
+      {title:'Plant Internship',desc:'Work in a manufacturing plant. Core experience matters.'}
+    ]},
+  cad:{emoji:'💻',title:'CAD Engineer',
+    skills:['AutoCAD','SolidWorks','CATIA V5','NX (Siemens)','GD&T','Engineering Drawing','ANSYS basics'],
+    certs:['SolidWorks CSWA','CATIA V5 Cert','Autodesk AutoCAD Certified'],
+    steps:[
+      {title:'AutoCAD 2D',desc:'Master 2D drafting, dimensioning, drawing standards.'},
+      {title:'3D Modeling',desc:'SolidWorks parts, assemblies, drawings — 10 real projects.'},
+      {title:'CATIA V5',desc:'Used in aerospace and automotive. Student version available.'},
+      {title:'Get Certified',desc:'CSWA certification from SolidWorks — industry recognized.'},
+      {title:'Apply to CAD Services',desc:'Tata Technologies, Wipro PARI, HCL are major CAD service providers.'}
+    ]},
+  site:{emoji:'🏗️',title:'Site Engineer',
+    skills:['AutoCAD Civil','Estimation & Costing','Concrete Mix Design','MS Project','Surveying','IS Codes','QA/QC'],
+    certs:['NICMAR Construction Management','CPWD Training','AutoCAD Civil 3D'],
+    steps:[
+      {title:'Civil Engineering Core',desc:'Concrete, steel, surveying, soil mechanics — master fundamentals.'},
+      {title:'AutoCAD Civil',desc:'2D drawings, civil 3D for roads and drainage.'},
+      {title:'Estimation & BOQ',desc:'Bill of quantities, rate analysis, project costing.'},
+      {title:'Site Internship',desc:'6 months at any construction site. Hands-on is mandatory.'},
+      {title:'GATE or Job',desc:'GATE CE for PSU roles or private sector construction.'}
+    ]},
+  struct:{emoji:'🏛️',title:'Structural Engineer',
+    skills:['STAAD Pro / ETABS','AutoCAD','IS 456/800 Codes','Foundation Design','RCC Design','Seismic Analysis'],
+    certs:['STAAD Pro Training','ETABS Certification','GATE CE'],
+    steps:[
+      {title:'Structural Analysis',desc:'RCC design, steel design, IS codes — deep study required.'},
+      {title:'STAAD Pro / ETABS',desc:'Software for structural analysis. Learn both if possible.'},
+      {title:'Design Projects',desc:'Design a residential building — foundation to slab.'},
+      {title:'GATE CE',desc:'For government structural roles and PSU recruitment.'},
+      {title:'Apply & Specialise',desc:'Target design firms or PSUs. Bridge/high-rise specialization pays well.'}
+    ]},
+  aero:{emoji:'🚀',title:'Aerospace / Aerodynamics Engineer',
+    skills:['MATLAB/Simulink','CFD (ANSYS Fluent)','Aerodynamics','Flight Mechanics','C Programming','CAD (CATIA)'],
+    certs:['NPTEL Aerospace Engineering','GATE AE','ISRO IIRS Free Courses'],
+    steps:[
+      {title:'Math & Physics Foundation',desc:'Fluid mechanics, thermodynamics, mechanics — master all.'},
+      {title:'MATLAB & Simulink',desc:'Used heavily in aerospace simulation and control system design.'},
+      {title:'CFD Basics',desc:'ANSYS Fluent for aerodynamic simulations. Study boundary conditions.'},
+      {title:'GATE AE',desc:'Target GATE AE score 650+ for ISRO/HAL/NAL recruitment.'},
+      {title:'Apply to Defence PSUs',desc:'ISRO ICRB, HAL, DRDO SET exam — watch official notifications.'}
+    ]},
+  space:{emoji:'🛰️',title:'Spacecraft Engineer',
+    skills:['MATLAB/Simulink','Orbital Mechanics','C Programming','Systems Engineering','Thermal Analysis','CATIA'],
+    certs:['GATE AE or ME','NPTEL Spaceflight Mechanics','ISRO IIRS Free Courses'],
+    steps:[
+      {title:'Aerospace Fundamentals',desc:'Orbital mechanics, propulsion, structures, attitude control.'},
+      {title:'MATLAB & Simulink',desc:'Satellite dynamics simulation, control system modeling.'},
+      {title:'Systems Engineering',desc:'Understand spacecraft subsystems — power, thermal, comm, payload.'},
+      {title:'GATE Score',desc:'700+ GATE AE/ME score for ISRO recruitment.'},
+      {title:'Private Space Startups',desc:'Agnikul, Skyroot, Bellatrix are India\'s new space startups hiring freshers.'}
+    ]},
+  process:{emoji:'🧪',title:'Chemical Process Engineer',
+    skills:['HYSYS/ASPEN','P&ID Reading','Mass Balance','Heat Transfer','Process Safety','AutoCAD P&ID','QA/QC'],
+    certs:['GATE CH','NPTEL Chemical Technology','HAZOP Training'],
+    steps:[
+      {title:'Core Chemical Engineering',desc:'Thermodynamics, mass transfer, reaction engineering — GATE syllabus.'},
+      {title:'Process Simulation',desc:'HYSYS or ASPEN software for process design and simulation.'},
+      {title:'P&ID and Safety',desc:'Read piping and instrumentation diagrams. Learn HAZOP.'},
+      {title:'Internship at Refinery',desc:'ONGC, BPCL, HPCL offer summer internships.'},
+      {title:'GATE CH for PSU',desc:'Score 600+ for ONGC, BPCL, IOCL recruitment.'}
+    ]},
+  biotech:{emoji:'🧬',title:'Biotech Engineer',
+    skills:['Molecular Biology','Cell Culture','PCR / ELISA','GMP/GLP','Bioinformatics','Lab Safety','HPLC'],
+    certs:['NPTEL Biotechnology','GMP Certification','Bioinformatics (Coursera)'],
+    steps:[
+      {title:'Lab Skills',desc:'PCR, gel electrophoresis, cell culture, ELISA — hands-on lab work.'},
+      {title:'GMP/GLP',desc:'Good Manufacturing/Laboratory Practice — required for pharma jobs.'},
+      {title:'Bioinformatics',desc:'Basic Python/R for bioinformatics. BLAST, sequence analysis tools.'},
+      {title:'Internship at Pharma',desc:'Biocon, Dr. Reddy\'s, Cipla offer biotech internships.'},
+      {title:'MS or Job',desc:'MS abroad in biotech is popular. India pharma sector also growing.'}
+    ]},
+  marine:{emoji:'🚢',title:'Marine Engineer',
+    skills:['Marine Diesel Engines','Thermodynamics','Ship Stability','Maritime Law','Watch Keeping','Fluid Mechanics'],
+    certs:['MMD Class 4 Engine Officer','STCW Certification','MARPOL Training'],
+    steps:[
+      {title:'Marine Engineering Core',desc:'Ship propulsion, marine diesel, fluid systems, stability.'},
+      {title:'STCW Certification',desc:'Standards of Training, Certification and Watchkeeping — mandatory.'},
+      {title:'Sea Time',desc:'Cadetship with shipping company. Mandatory sea time for certification.'},
+      {title:'MMD Class 4',desc:'Merchant Marine Department exam for engine officer certificate.'},
+      {title:'Sail & Earn',desc:'Marine engineers earn tax-free income. Senior officers earn ₹5L+/month.'}
+    ]},
+  petro:{emoji:'⛽',title:'Petroleum Engineer',
+    skills:['Reservoir Engineering','Drilling Engineering','Petroleum Geology','ECLIPSE/CMG Software','Well Logging','HSE'],
+    certs:['GATE PE or CH','SPE Membership','BOSIET Safety Training'],
+    steps:[
+      {title:'Petroleum Engineering Core',desc:'Reservoir mechanics, drilling, production, well completion.'},
+      {title:'Software Tools',desc:'ECLIPSE or CMG for reservoir simulation. Petrel for geology.'},
+      {title:'HSE & Safety',desc:'Health, Safety and Environment training — mandatory in oil industry.'},
+      {title:'GATE for ONGC',desc:'GATE score for ONGC/Oil India PSU recruitment.'},
+      {title:'Field Exposure',desc:'Offshore drilling experience pays very high. BOSIET cert needed.'}
+    ]},
+  mine:{emoji:'⛏️',title:'Mining Engineer',
+    skills:['Mine Planning','Blast Design','Surveying','AutoCAD Mine','Ventilation','Rock Mechanics','HSE'],
+    certs:['GATE MN','Mine Manager Certificate','Mine Surveyor Certificate'],
+    steps:[
+      {title:'Mining Core Subjects',desc:'Rock mechanics, mining methods, mine design, ventilation.'},
+      {title:'Mine Safety',desc:'First aid, fire fighting, statutory requirements — mandatory in mining.'},
+      {title:'AutoCAD & Mine Planning',desc:'Surpac or Whittle for mine planning and design.'},
+      {title:'GATE MN',desc:'GATE Mining score for Coal India, NMDC, MOIL recruitment.'},
+      {title:'Get Mining License',desc:'Mine Foreman certificate for supervisory roles.'}
+    ]},
+  robotics:{emoji:'🤖',title:'Robotics Engineer',
+    skills:['ROS (Robot Operating System)','C++/Python','Arduino/Raspberry Pi','Control Systems','MATLAB','PLC','Computer Vision'],
+    certs:['NPTEL Robotics','Coursera Robotics Specialization (UPenn)','ROS2 Course'],
+    steps:[
+      {title:'Programming Foundation',desc:'C++ and Python — both essential for robotics.'},
+      {title:'Electronics & Sensors',desc:'Arduino, Raspberry Pi, IMU sensors, motor drivers.'},
+      {title:'ROS Framework',desc:'ROS2 nodes, topics, services. Simulate in Gazebo.'},
+      {title:'Build a Robot',desc:'Line follower, arm manipulator, or mobile robot project.'},
+      {title:'Control Systems',desc:'PID control, inverse kinematics, path planning algorithms.'}
+    ]},
+  auto:{emoji:'🤖',title:'Automation Engineer',
+    skills:['PLC Programming (Siemens/Allen Bradley)','SCADA','HMI','Ladder Logic','Servo Drives','Pneumatics','Industrial IoT'],
+    certs:['Siemens TIA Portal Training','Rockwell Automation Cert','NPTEL Automation'],
+    steps:[
+      {title:'PLC Basics',desc:'Ladder logic, function blocks. Siemens TIA Portal (free trial).'},
+      {title:'SCADA & HMI',desc:'WinCC, iFIX, or Ignition SCADA. Design operator screens.'},
+      {title:'Industrial Networking',desc:'Profibus, Profinet, EtherNet/IP industrial communication.'},
+      {title:'Servo & Drives',desc:'VFDs, servo drives, motion control programming.'},
+      {title:'Get Certified',desc:'Siemens or Rockwell certification. Industrial plant internship is gold.'}
+    ]},
+  plc:{emoji:'🖥️',title:'PLC/SCADA Engineer',
+    skills:['PLC Programming','Siemens S7 / Allen Bradley','SCADA','HMI Design','Ladder Logic','Process Control','Industrial Safety'],
+    certs:['Siemens Certified PLC Programmer','Rockwell Automation Cert','NPTEL PLC Course'],
+    steps:[
+      {title:'Ladder Logic Basics',desc:'PLC scan cycle, contacts, coils, timers, counters.'},
+      {title:'Siemens TIA Portal',desc:'Download free trial. Program a conveyor belt simulation.'},
+      {title:'SCADA Integration',desc:'Connect PLC to SCADA system. Create operator interface.'},
+      {title:'Plant Internship',desc:'Get 6 months in any manufacturing or process plant.'},
+      {title:'Allen Bradley too',desc:'Learn both Siemens AND Allen Bradley — doubles your job options.'}
+    ]},
+  agri:{emoji:'🌾',title:'Agricultural Engineer',
+    skills:['Farm Machinery','Irrigation Design','Soil Science','GPS/GIS','Post-Harvest Technology','AutoCAD','Agri-Business'],
+    certs:['ICAR JRF','NPTEL Agricultural Engineering','GIS for Agriculture (Coursera)'],
+    steps:[
+      {title:'Core Agricultural Engineering',desc:'Farm machinery, irrigation, soil, drainage engineering.'},
+      {title:'GIS & Remote Sensing',desc:'Use QGIS (free) for precision agriculture maps.'},
+      {title:'Farm Internship',desc:'Work at a progressive farm or agri startup.'},
+      {title:'Agri Startups',desc:'Many agri-tech startups hiring — Fasal, DeHaat, AgroStar.'},
+      {title:'Government Jobs',desc:'ICAR JRF, state agriculture officer exams. Good salary + stability.'}
+    ]},
+  foodtech:{emoji:'🍽️',title:'Food Technologist',
+    skills:['Food Processing','HACCP','GMP/GLP','Quality Control','Sensory Analysis','Food Packaging','R&D'],
+    certs:['FSSAI Food Safety Certification','HACCP Certification','NPTEL Food Technology'],
+    steps:[
+      {title:'Food Science Fundamentals',desc:'Food chemistry, microbiology, processing technologies.'},
+      {title:'HACCP & GMP',desc:'Hazard analysis, critical control points — required for food industry.'},
+      {title:'FSSAI Certification',desc:'Food Safety Supervisor Certification by FSSAI.'},
+      {title:'Industry Internship',desc:'Intern at Nestle, Britannia or any food processing plant.'},
+      {title:'R&D or QA Career',desc:'R&D (new product development) or QA/QC — two main career paths.'}
+    ]},
+  textile:{emoji:'🧵',title:'Textile Engineer',
+    skills:['Yarn & Fabric Technology','Dyeing & Finishing','Quality Control','CAD for Textile','ERP Basics','Sustainability'],
+    certs:['NIFT Short Courses','Textile Testing Certification','NPTEL Textile Engineering'],
+    steps:[
+      {title:'Textile Technology',desc:'Spinning, weaving, knitting, non-woven — understand all processes.'},
+      {title:'Dyeing & Finishing',desc:'Wet processing, chemical treatments, colorfastness testing.'},
+      {title:'Quality Testing',desc:'Tensile strength, pilling, color fastness — ISO test standards.'},
+      {title:'Industry Internship',desc:'Work in a textile mill for 6 months. Hands-on is key.'},
+      {title:'Export Houses',desc:'Tirupur, Surat, Ahmedabad — textile export industry pays well.'}
+    ]},
+};
+
+function autoCategories(key, d) {
+  return [
+    {icon:'🗺️', title:'Roadmap Milestones', items: d.steps.map((s,i)=>({
+      id:`${key}_step${i+1}`, title:s.title, desc:s.desc, tag:'tag-year', tagText:`Step ${i+1}`
+    }))},
+    {icon:'🛠️', title:'Key Skills to Build', items: d.skills.map((s,i)=>({
+      id:`${key}_skill${i+1}`, title:`Learn: ${s}`, desc:`Build hands-on proficiency in ${s}.`, tag:'tag-skill', tagText:'Skill'
+    }))},
+    {icon:'📜', title:'Recommended Certifications', items: d.certs.map((c,i)=>({
+      id:`${key}_cert${i+1}`, title:c, desc:'Recommended certification for this career path.', tag:'tag-cert', tagText:'Cert'
+    }))}
+  ];
+}
+
+// Only fill in careers that don't already have a hand-crafted tracker above,
+// so the richer manually-written trackers are never overwritten.
+Object.keys(autoRoadmapData).forEach(key => {
+  if (!careerData[key]) {
+    const d = autoRoadmapData[key];
+    careerData[key] = { title: d.title, emoji: d.emoji, categories: autoCategories(key, d) };
+  }
+});
+
+// ── LOAD CAREER ───────────────────────────────────────────────
+async function loadCareer() {
+  const sel = document.getElementById('careerSelect').value;
+  if (!sel) { alert('Please select a career first!'); return; }
+  currentCareer = sel;
+  currentState  = await loadState(sel);
+  render();
+}
+
+// ── TOGGLE ITEM ───────────────────────────────────────────────
+async function toggleItem(id) {
+  currentState[id] = !currentState[id];
+  await saveState(currentCareer, currentState);
+  if(currentState[id]) localStorage.setItem('cc_last_career', currentCareer);
+  render();
+}
+
+// ── CLEAR PROGRESS ────────────────────────────────────────────
+async function clearProgress() {
+  if (!currentCareer) { alert('Load a career first!'); return; }
+  if (!confirm('Reset all progress for this career?')) return;
+  currentState = {};
+  await saveState(currentCareer, currentState);
+  render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  const data = careerData[currentCareer];
+  if (!data) return;
+
+  let total = 0, done = 0;
+  data.categories.forEach(cat => cat.items.forEach(item => { total++; if(currentState[item.id]) done++; }));
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  document.getElementById('statsRow').style.display    = 'grid';
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDone').textContent  = done;
+  document.getElementById('statLeft').textContent  = total - done;
+  document.getElementById('statPct').textContent   = pct + '%';
+  document.getElementById('progressTitle').textContent = data.emoji + ' ' + data.title + ' — Your Progress';
+  document.getElementById('progressPct').textContent   = pct + '%';
+  document.getElementById('progressFill').style.width  = pct + '%';
+
+  const msgs = [
+    [0,  "Start ticking tasks to begin your journey! 🚀"],
+    [1,  "Great — you've started! Keep going! 💪"],
+    [25, "25% done — solid start! Stay consistent! 📈"],
+    [50, "Halfway there — you're doing really well! 🌟"],
+    [75, "75% complete — almost there, don't stop now! 🔥"],
+    [90, "So close! Just a few tasks left! 🎯"],
+    [100,"🎉 100% done! Time to apply and land that job!"],
+  ];
+  let msg = msgs[0][1];
+  for (const [threshold, text] of msgs) { if(pct >= threshold) msg = text; }
+  document.getElementById('progressMsg').textContent    = msg;
+  document.getElementById('congratsBanner').style.display = pct === 100 ? 'block' : 'none';
+
+  let html = '';
+  data.categories.forEach(cat => {
+    const catDone  = cat.items.filter(i => currentState[i.id]).length;
+    html += `<div class="category">
+      <div class="category-header">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-title">${cat.title}</span>
+        <span class="cat-count">${catDone} / ${cat.items.length}</span>
+      </div>
+      <div class="checklist">`;
+    cat.items.forEach(item => {
+      const isDone = !!currentState[item.id];
+      html += `<div class="check-item ${isDone?'done':''}" onclick="window._toggleItem('${item.id}')">
+        <div class="checkbox"><span class="check-mark">✓</span></div>
+        <div class="item-body">
+          <div class="item-title">${item.title}</div>
+          <div class="item-desc">${item.desc}</div>
+          <span class="item-tag ${item.tag}">${item.tagText}</span>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('checklistArea').innerHTML = html;
+}
+
+// ── EXPOSE TO HTML ────────────────────────────────────────────
+window._toggleItem   = toggleItem;
+window.loadCareer    = loadCareer;
+window.clearProgress = clearProgress;
+
+// ── AUTH STATE LISTENER ───────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('loginNotice').style.display  = 'none';
+    document.getElementById('sidebarName').textContent    = user.displayName || user.email;
+    document.getElementById('sidebarAvatar').textContent  = (user.displayName || user.email || 'U')[0].toUpperCase();
+    document.getElementById('sidebarLevel').textContent   = '✅ Logged in';
+    setSyncStatus('green','✅ Logged in as <span>'+(user.displayName||user.email)+'</span> — synced to cloud');
+    try {
+      const snap = await getDoc(doc(db,'progress',user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.career && data.tasks) {
+          currentCareer = data.career;
+          currentState  = data.tasks;
+          document.getElementById('careerSelect').value = data.career;
+          localStorage.setItem('cc_last_career', data.career);
+          render();
+        }
+      }
+    } catch(err) { console.warn('Could not load from Firestore:', err); }
+  } else {
+    document.getElementById('loginNotice').style.display = 'block';
+    setSyncStatus('grey','⚠️ Not logged in — saving locally. <a href="login.html">Login</a> to sync to cloud');
+    const last = localStorage.getItem('cc_last_career');
+    if (last && careerData[last]) {
+      currentCareer = last;
+      currentState  = JSON.parse(localStorage.getItem('cc_progress_' + last) || '{}');
+      document.getElementById('careerSelect').value = last;
+      render();
+    }
+  }
+});
+
+document.getElementById('careerSelect').addEventListener('change', function() {
+  if (this.value) localStorage.setItem('cc_last_career', this.value);
+});
+</script>
+</body>
+</html>

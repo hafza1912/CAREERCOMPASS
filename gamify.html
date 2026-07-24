@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerCompass – My Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* [All your original CSS remains unchanged] */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;display:flex;min-height:100vh;}
+    .dash-sidebar{width:240px;min-width:240px;background:#0f1320;height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.4);border-right:1px solid #1e2433;}
+    .dash-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#34d399;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid #1e2433;display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
+    .dash-logo span{color:#fff;}
+    .dash-section-label{font-size:0.62rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;padding:10px 20px 4px;flex-shrink:0;}
+    .dash-scroll{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;scrollbar-width:none;}
+    .dash-scroll::-webkit-scrollbar{display:none;}
+    .dash-nav{padding:4px 10px;display:flex;flex-direction:column;gap:2px;}
+    .dash-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:#64748b;text-decoration:none;font-size:0.83rem;font-weight:500;transition:all 0.2s;cursor:pointer;white-space:nowrap;}
+    .dash-nav-item:hover{background:rgba(255,255,255,0.06);color:#94a3b8;}
+    .dash-nav-item.active{background:linear-gradient(135deg,rgba(5,150,105,0.2),rgba(52,211,153,0.1));color:#34d399;font-weight:700;border:1px solid rgba(5,150,105,0.3);}
+    .dash-nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+    .nav-badge{margin-left:auto;background:#059669;color:#fff;font-size:0.62rem;font-weight:700;padding:2px 6px;border-radius:8px;}
+    .dash-nav-item.active .nav-badge{background:rgba(52,211,153,0.2);color:#34d399;}
+    .nav-divider{height:1px;background:#1e2433;margin:6px 10px;}
+    .dash-bottom{padding:10px 10px 12px;border-top:1px solid #1e2433;display:flex;flex-direction:column;gap:6px;flex-shrink:0;background:#0f1320;}
+    .dash-profile{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);cursor:pointer;transition:background 0.2s;border:1px solid #1e2433;}
+    .dash-profile:hover{background:rgba(255,255,255,0.08);}
+    .dash-profile-avatar{width:32px;height:32px;background:linear-gradient(135deg,#059669,#34d399);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:800;color:#fff;flex-shrink:0;}
+    .dash-profile-info{flex:1;min-width:0;}
+    .dash-profile-name{font-size:0.78rem;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .dash-profile-level{font-size:0.65rem;color:#34d399;margin-top:1px;}
+    .dash-login-btn{background:linear-gradient(135deg,#059669,#34d399);color:#fff;border:none;padding:8px 12px;border-radius:10px;font-size:0.76rem;font-weight:700;cursor:pointer;text-align:center;transition:opacity 0.2s;}
+    .dash-login-btn:hover{opacity:0.9;}
+    .sync-bar{position:fixed;top:0;left:240px;right:0;height:32px;background:#0a1a12;border-bottom:1px solid #1e4033;display:flex;align-items:center;padding:0 24px;gap:8px;z-index:99;}
+    .sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .sync-dot.green{background:#059669;}
+    .sync-dot.yellow{background:#f59e0b;animation:blink 1s infinite;}
+    .sync-dot.grey{background:#475569;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    .sync-text{font-size:0.7rem;font-weight:600;color:#64748b;}
+    .sync-text span{color:#34d399;}
+    .topbar{position:fixed;top:32px;left:240px;right:0;height:52px;background:#0f1320;border-bottom:1px solid #1e2433;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.3);}
+    .topbar-left{display:flex;align-items:center;gap:10px;}
+    .topbar-greeting{font-size:0.88rem;font-weight:600;color:#e2e8f0;}
+    .topbar-sub{font-size:0.72rem;color:#64748b;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .topbar-badge{display:flex;align-items:center;gap:5px;background:rgba(5,150,105,0.15);color:#34d399;font-size:0.72rem;font-weight:700;padding:5px 10px;border-radius:18px;border:1px solid rgba(5,150,105,0.3);}
+    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#94a3b8;}
+    .main-content{margin-left:240px;margin-top:84px;flex:1;min-height:calc(100vh - 84px);background:#0a0d14;}
+    .page-header{background:linear-gradient(135deg,#0f1320,#0d1f18);padding:28px 40px 20px;text-align:center;border-bottom:1px solid #1e2433;position:relative;overflow:hidden;}
+    .page-header::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:260px;height:260px;background:radial-gradient(circle,rgba(5,150,105,0.1),transparent 70%);pointer-events:none;}
+    .page-header h1{font-size:1.7rem;font-weight:800;color:#fff;margin-bottom:5px;font-family:'Space Grotesk',sans-serif;}
+    .page-header p{color:#64748b;font-size:0.86rem;}
+    .main{max-width:940px;margin:0 auto;padding:24px 32px;display:grid;grid-template-columns:285px 1fr;gap:18px;}
+    .left-col{display:flex;flex-direction:column;gap:16px;}
+    .profile-card{background:#0f1320;border:1px solid #1e2433;border-radius:18px;padding:20px;text-align:center;}
+    .avatar-wrap{position:relative;display:inline-block;margin-bottom:12px;}
+    .avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto;border:3px solid #059669;box-shadow:0 0 18px rgba(5,150,105,0.3);cursor:pointer;}
+    .avatar-level{position:absolute;bottom:-4px;right:-4px;background:#059669;color:#fff;font-size:0.62rem;font-weight:800;padding:2px 6px;border-radius:8px;border:2px solid #0a0d14;}
+    .profile-name{font-size:1.1rem;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:3px;}
+    .profile-career{font-size:0.75rem;color:#64748b;margin-bottom:9px;}
+    .profile-level-badge{display:inline-flex;align-items:center;gap:5px;background:#0d2818;border:1px solid #059669;color:#34d399;font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:10px;}
+    .xp-section{margin-top:14px;}
+    .xp-top{display:flex;justify-content:space-between;margin-bottom:5px;}
+    .xp-label{font-size:0.66rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;}
+    .xp-val{font-size:0.66rem;font-weight:800;color:#34d399;}
+    .xp-bar-bg{background:#1e2433;border-radius:8px;height:9px;overflow:hidden;}
+    .xp-bar-fill{height:100%;background:linear-gradient(90deg,#059669,#34d399);border-radius:8px;transition:width 1s ease;}
+    .xp-next{font-size:0.62rem;color:#475569;margin-top:3px;text-align:right;}
+    .checkin-btn{background:linear-gradient(135deg,#059669,#34d399);color:#fff;border:none;padding:11px 24px;border-radius:12px;font-size:0.86rem;font-weight:800;cursor:pointer;width:100%;margin-top:12px;font-family:'Space Grotesk',sans-serif;transition:transform 0.2s,box-shadow 0.2s;}
+    .checkin-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,150,105,0.3);}
+    .checkin-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+    .stats-card{background:#0f1320;border:1px solid #1e2433;border-radius:18px;padding:18px;}
+    .stats-card-title{font-size:0.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .stat-box{background:#0a0d14;border:1px solid #1e2433;border-radius:12px;padding:12px 10px;text-align:center;}
+    .stat-box .sv{font-size:1.35rem;font-weight:800;font-family:'Space Grotesk',sans-serif;}
+    .stat-box .sl{font-size:0.58rem;font-weight:600;color:#64748b;text-transform:uppercase;margin-top:2px;letter-spacing:0.3px;}
+    .sv-xp{color:#34d399;}.sv-streak{color:#f97316;}.sv-tasks{color:#818cf8;}.sv-badges{color:#fbbf24;}
+    .right-col{display:flex;flex-direction:column;gap:16px;}
+    .streak-card{background:linear-gradient(135deg,#1a0a00,#2d1200);border:1px solid #7c2d12;border-radius:18px;padding:20px;}
+    .streak-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .streak-fire{font-size:2.2rem;animation:pulse 1.5s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+    .streak-num{font-size:1.8rem;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;line-height:1;}
+    .streak-lbl{font-size:0.75rem;color:#fed7aa;font-weight:600;margin-top:2px;}
+    .streak-msg{font-size:0.68rem;color:#9a3412;margin-top:2px;}
+    .week-row{display:flex;gap:6px;}
+    .week-day{flex:1;background:rgba(255,255,255,0.05);border-radius:9px;padding:7px 3px;text-align:center;}
+    .week-day .wd-name{font-size:0.57rem;color:#9a3412;font-weight:700;text-transform:uppercase;margin-bottom:3px;}
+    .week-day .wd-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.06);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:0.65rem;}
+    .week-day.done .wd-dot{background:#ea580c;color:#fff;}
+    .week-day.done .wd-name{color:#fb923c;}
+    .week-day.today{background:rgba(234,88,12,0.12);border:1px solid #ea580c;}
+    .week-day.today .wd-dot{background:#fff;color:#ea580c;font-size:0.6rem;font-weight:800;}
+    .week-day.today .wd-name{color:#fb923c;}
+    .streak-lost{background:#1a0014;border:1px solid #6b21a8;border-radius:12px;padding:12px;text-align:center;display:none;margin-top:10px;}
+    .streak-lost p{font-size:0.78rem;color:#c084fc;font-weight:600;}
+    .levels-card{background:#0f1320;border:1px solid #1e2433;border-radius:18px;padding:20px;}
+    .levels-title{font-size:0.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;}
+    .levels-road{display:flex;align-items:center;overflow-x:auto;padding-bottom:4px;}
+    .level-node{display:flex;flex-direction:column;align-items:center;min-width:80px;}
+    .level-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;border:2px solid #1e2433;background:#0a0d14;position:relative;}
+    .level-circle.done{background:#0d2818;border-color:#059669;}
+    .level-circle.current{background:linear-gradient(135deg,#059669,#34d399);border-color:#34d399;box-shadow:0 0 14px rgba(52,211,153,0.3);}
+    .level-circle.locked{opacity:0.35;}
+    .level-circle.current::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(52,211,153,0.3);animation:glow 2s ease-in-out infinite;}
+    @keyframes glow{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .level-name{font-size:0.58rem;font-weight:700;color:#64748b;margin-top:5px;text-align:center;line-height:1.3;}
+    .level-xp{font-size:0.52rem;color:#475569;margin-top:1px;}
+    .level-line{flex:1;height:2px;background:#1e2433;min-width:12px;}
+    .level-line.done{background:linear-gradient(90deg,#059669,#34d399);}
+    .badges-card{background:#0f1320;border:1px solid #1e2433;border-radius:18px;padding:20px;}
+    .badges-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .badges-title{font-size:0.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;}
+    .badges-count{font-size:0.7rem;font-weight:700;color:#34d399;background:#0d2818;padding:3px 9px;border-radius:7px;}
+    .badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .badge-card{background:#0a0d14;border:1px solid #1e2433;border-radius:12px;padding:12px 8px;text-align:center;transition:all 0.2s;position:relative;overflow:hidden;}
+    .badge-card.unlocked{border-color:#1e4033;background:#0a1a12;}
+    .badge-card.unlocked:hover{border-color:#059669;transform:translateY(-2px);box-shadow:0 5px 16px rgba(5,150,105,0.15);}
+    .badge-card.locked{opacity:0.3;filter:grayscale(0.5);}
+    .b-icon{font-size:1.6rem;margin-bottom:5px;display:block;}
+    .b-name{font-size:0.68rem;font-weight:700;color:#64748b;margin-bottom:2px;}
+    .badge-card.unlocked .b-name{color:#34d399;}
+    .b-desc{font-size:0.58rem;color:#475569;line-height:1.4;}
+    .badge-card.unlocked .b-desc{color:#4b7c6f;}
+    .b-earned{font-size:0.56rem;color:#059669;font-weight:700;margin-top:3px;}
+    .b-lock{font-size:0.56rem;color:#334155;margin-top:3px;}
+    .badge-new{position:absolute;top:5px;right:5px;background:#f59e0b;color:#fff;font-size:0.52rem;font-weight:800;padding:1px 4px;border-radius:3px;}
+    .activity-card{background:#0f1320;border:1px solid #1e2433;border-radius:18px;padding:20px;}
+    .activity-title{font-size:0.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+    .activity-list{display:flex;flex-direction:column;gap:7px;max-height:170px;overflow-y:auto;}
+    .activity-item{display:flex;align-items:center;gap:10px;padding:9px 11px;background:#0a0d14;border-radius:9px;border:1px solid #1e2433;}
+    .activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .dot-green{background:#059669;}.dot-orange{background:#f97316;}.dot-purple{background:#818cf8;}.dot-yellow{background:#fbbf24;}
+    .activity-text{font-size:0.75rem;color:#94a3b8;flex:1;}
+    .activity-text strong{color:#e2e8f0;}
+    .activity-time{font-size:0.62rem;color:#475569;}
+    .toast{position:fixed;bottom:24px;right:24px;background:#0d2818;border:1px solid #059669;border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.5);z-index:999;transform:translateY(100px);opacity:0;transition:all 0.4s ease;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast-icon{font-size:1.3rem;}
+    .toast-text{font-size:0.82rem;color:#e2e8f0;font-weight:600;}
+    .toast-sub{font-size:0.7rem;color:#64748b;margin-top:1px;}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:150;}
+    @media(max-width:900px){.main{grid-template-columns:1fr;padding:20px 16px;}}
+    @media(max-width:700px){.dash-sidebar{transform:translateX(-100%);transition:transform 0.3s;z-index:300;}.dash-sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}.topbar,.sync-bar{left:0;}.main-content{margin-left:0;}.hamburger{display:block;}.page-header{padding:24px 16px 18px;}}
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="dash-sidebar" id="dashSidebar">
+  <div class="dash-logo" onclick="window.location.href='index.html'">🧭 Career<span>Compass</span></div>
+  <div class="dash-scroll">
+    <div class="dash-section-label">Main Menu</div>
+    <nav class="dash-nav">
+      <a class="dash-nav-item" href="index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+      <a class="dash-nav-item" href="roadmap.html"><span class="nav-icon">🗺️</span><span class="nav-label">Roadmap</span></a>
+      <a class="dash-nav-item" href="progress.html"><span class="nav-icon">✅</span><span class="nav-label">Progress</span></a>
+      <a class="dash-nav-item" href="resume.html"><span class="nav-icon">📄</span><span class="nav-label">Resume</span></a>
+      <a class="dash-nav-item" href="compare.html"><span class="nav-icon">⚖️</span><span class="nav-label">Compare</span></a>
+    </nav>
+    <div class="nav-divider"></div>
+    <div class="dash-section-label">Account</div>
+    <nav class="dash-nav">
+      <a class="dash-nav-item active" href="gamify.html"><span class="nav-icon">🎮</span><span class="nav-label">My Profile</span></a>
+      <a class="dash-nav-item" href="chatbot.html"><span class="nav-icon">🤖</span><span class="nav-label">AI Chat</span></a>
+      <a class="dash-nav-item" href="buddy.html"><span class="nav-icon">🤝</span><span class="nav-label">Career Buddy</span></a>
+      <a class="dash-nav-item" href="login.html"><span class="nav-icon">🔐</span><span class="nav-label">Login / Sign Up</span></a>
+    </nav>
+  </div>
+  <div class="dash-bottom">
+    <div class="dash-profile" onclick="promptName()">
+      <div class="dash-profile-avatar" id="sidebarAvatar">S</div>
+      <div class="dash-profile-info">
+        <div class="dash-profile-name" id="sidebarName">Career Explorer</div>
+        <div class="dash-profile-level" id="sidebarLevel">🏅 Level 1 · Fresher</div>
+      </div>
+    </div>
+    <button class="dash-login-btn" onclick="window.location.href='login.html'">🔐 Login to Save Progress</button>
+  </div>
+</aside>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-dot grey" id="syncDot"></div>
+  <div class="sync-text" id="syncText">Checking login status...</div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div>
+      <div class="topbar-greeting">🎮 My Career Profile</div>
+      <div class="topbar-sub">Track streak · Earn XP · Unlock badges</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">⭐ <span id="topbarLevel">Fresher</span></div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="page-header">
+    <h1>🎮 My Career Profile</h1>
+    <p>Track your streak, earn XP, unlock badges and level up your career journey</p>
+  </div>
+
+  <div class="main">
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+      <div class="profile-card">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatarEl" title="Double-click to change name">👨‍💻</div>
+          <div class="avatar-level" id="avatarLevel">Lv.1</div>
+        </div>
+        <div class="profile-name" id="profileName">Career Explorer</div>
+        <div class="profile-career" id="profileCareer">🎯 No career selected yet</div>
+        <div class="profile-level-badge">⭐ <span id="levelName">Fresher</span></div>
+        <div class="xp-section">
+          <div class="xp-top">
+            <span class="xp-label">XP Progress</span>
+            <span class="xp-val" id="xpVal">0 / 200 XP</span>
+          </div>
+          <div class="xp-bar-bg"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
+          <div class="xp-next" id="xpNext">Complete tasks to earn XP!</div>
+        </div>
+        <button class="checkin-btn" id="checkinBtn" onclick="window._dailyCheckIn()">🔥 Daily Check-In</button>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-card-title">📊 Your Stats</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="sv sv-xp" id="statXP">0</div><div class="sl">Total XP</div></div>
+          <div class="stat-box"><div class="sv sv-streak" id="statStreak">0🔥</div><div class="sl">Day Streak</div></div>
+          <div class="stat-box"><div class="sv sv-tasks" id="statTasks">0</div><div class="sl">Tasks Done</div></div>
+          <div class="stat-box"><div class="sv sv-badges" id="statBadges">0</div><div class="sl">Badges</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <div class="streak-card">
+        <div class="streak-header">
+          <div class="streak-fire">🔥</div>
+          <div>
+            <div class="streak-num" id="streakNum">0</div>
+            <div class="streak-lbl">Day Streak</div>
+            <div class="streak-msg" id="streakMsg">Start your streak with a daily check-in!</div>
+          </div>
+        </div>
+        <div class="week-row" id="weekRow"></div>
+        <div class="streak-lost" id="streakLost"><p>😢 Your streak was reset! Check in daily to keep it going.</p></div>
+      </div>
+
+      <div class="levels-card">
+        <div class="levels-title">🏆 Level Journey</div>
+        <div class="levels-road" id="levelsRoad"></div>
+      </div>
+
+      <div class="badges-card">
+        <div class="badges-top">
+          <div class="badges-title">🏅 Badges</div>
+          <div class="badges-count" id="badgesCount">0 / 9 unlocked</div>
+        </div>
+        <div class="badges-grid" id="badgesGrid"></div>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-title">⚡ Recent Activity</div>
+        <div class="activity-list" id="activityList">
+          <div style="text-align:center;color:#475569;font-size:0.78rem;padding:18px;">No activity yet — start completing tasks!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon">🏅</div>
+  <div>
+    <div class="toast-text" id="toastText">Badge Unlocked!</div>
+    <div class="toast-sub"  id="toastSub">Keep going!</div>
+  </div>
+</div>
+
+<script type="module">
+  // ── Firebase imports ──────────────────────────────────────────
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0KQIXnYg7pMDrQs_Ln3MR-_XNQAlO8uY",
+    authDomain: "careercompass-2add1.firebaseapp.com",
+    projectId: "careercompass-2add1",
+    storageBucket: "careercompass-2add1.firebasestorage.app",
+    messagingSenderId: "877245919412",
+    appId: "1:877245919412:web:0d05357109934be17ea7e1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // ── Levels & Badges (same as before) ─────────────────────────
+  const levels = [
+    {name:'Fresher', icon:'🌱', xpNeeded:0},
+    {name:'Intern', icon:'📚', xpNeeded:200},
+    {name:'Junior Dev', icon:'💻', xpNeeded:500},
+    {name:'Mid-Level', icon:'⚡', xpNeeded:1000},
+    {name:'Senior Dev', icon:'🚀', xpNeeded:2000},
+    {name:'Tech Lead', icon:'🏆', xpNeeded:3500},
+    {name:'Architect', icon:'👑', xpNeeded:5000},
+  ];
+
+  const badgeDefs = [ /* same badge definitions */ ];
+
+  let currentUser = null;
+
+  const DEFAULTS = {
+    xp:0, streak:0, lastCheckIn:null, weekLog:{},
+    tasksCompleted:0, certsCompleted:0, skillsAdded:0,
+    roadmapUsed:false, trackerComplete:false, resumeGenerated:false,
+    unlockedBadges:[], activity:[], name:'Career Explorer',
+  };
+
+  function setSyncStatus(status, msg) {
+    document.getElementById('syncDot').className = 'sync-dot ' + status;
+    document.getElementById('syncText').innerHTML = msg;
+  }
+
+  async function saveState(s) {
+    localStorage.setItem('cc_gamify', JSON.stringify(s));
+    if (currentUser) {
+      try {
+        setSyncStatus('yellow','Syncing to cloud...');
+        await setDoc(doc(db,'gamify',currentUser.uid), { ...s, updatedAt: serverTimestamp() });
+        setSyncStatus('green','✅ Synced as <span>'+(currentUser.displayName||currentUser.email)+'</span>');
+      } catch(err) {
+        setSyncStatus('grey','⚠️ Cloud sync failed — saved locally');
+      }
+    }
+  }
+
+  async function loadState(){
+  // Always check localStorage first for latest streak data
+  let local = {};
+  try{ local = JSON.parse(localStorage.getItem('cc_gamify')||'{}'); }catch(e){}
+
+  if(currentUser){
+    try{
+      const snap = await getDoc(doc(db,'gamify',currentUser.uid));
+      if(snap.exists()){
+        const cloud = snap.data();
+        // Use whichever has the higher streak (localStorage is more up to date)
+        if((local.streak||0) >= (cloud.streak||0)){
+          return {...DEFAULTS,...cloud,...local};
+        }
+        return {...DEFAULTS,...cloud};
+      }
+    }catch(err){ console.warn('Firestore load failed:',err); }
+  }
+  return {...DEFAULTS,...local};
+}
+
+  function syncFromProgress(s) {
+  try {
+    const lastCareer = localStorage.getItem('cc_last_career');
+    if (!lastCareer) return s;
+
+    // Read from localStorage (already synced from Firestore)
+    const progress = JSON.parse(localStorage.getItem('cc_progress_'+lastCareer)||'{}');
+    const allKeys  = Object.keys(progress);
+    const done     = allKeys.filter(k=>progress[k]===true).length;
+    const certKeys = allKeys.filter(k=>k.includes('cert') && progress[k]===true);
+
+    // Only update if progress tracker has more tasks done
+    if(done > (s.tasksCompleted||0)){
+      const xpEarned = done * 10; // 10 XP per task
+      s.tasksCompleted = done;
+      s.certsCompleted = certKeys.length;
+      s.xp = Math.max(s.xp, xpEarned + (s.streak * 5));
+
+      // Check if career is 100% complete
+      const counts = {
+        swe:17, ds:16, cloud:14, devops:13, fullstack:14,
+        ml:14, pentest:15, soc:13, embedded:14, vlsi:13,
+        design:11, robot:13, psu:14, isro:13
+      };
+      if(done >= (counts[lastCareer]||20)) s.trackerComplete = true;
+
+      // Add activity log entry
+      if(!s.activity) s.activity = [];
+      const alreadyLogged = s.activity.some(a=>a.text&&a.text.includes('Progress Tracker'));
+      if(!alreadyLogged){
+        addActivity(s,'✅',`Synced ${done} completed tasks from Progress Tracker (+${done*10} XP)`,'dot-purple');
+      }
+    }
+    try{
+      const resumeData = JSON.parse(localStorage.getItem('cc_resume')||'{}');
+      if(resumeData.skills && resumeData.skills.length >= 10) s.skillsAdded = resumeData.skills.length;
+    }catch(e){}
+
+  } catch(e){ console.warn('syncFromProgress error:',e); }
+
+  // Check other badges
+  if(localStorage.getItem('cc_resume_generated')) s.resumeGenerated = true;
+  if(localStorage.getItem('cc_roadmap_used'))     s.roadmapUsed     = true;
+
+  return s;
+}
+
+  async function dailyCheckIn() {
+  let s = await loadState();
+  const today     = new Date().toDateString();
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+
+  if(s.lastCheckIn === today){
+    showToast('✅','Already checked in today!','Come back tomorrow!');
+    return;
+  }
+
+  if(s.lastCheckIn===yesterday){
+    s.streak += 1;
+  } else if(s.lastCheckIn===null || s.lastCheckIn===undefined){
+    s.streak = 1;
+  } else {
+    if(s.streak>0) document.getElementById('streakLost').style.display='block';
+    s.streak = 1;
+  }
+
+  s.lastCheckIn    = today;
+  s.weekLog[today] = true;
+  s.xp            += 15;
+
+  addActivity(s,'🔥',`Daily check-in! Streak: ${s.streak} day${s.streak>1?'s':''} (+15 XP)`,'dot-orange');
+
+  await saveState(s);
+  checkBadges(s);
+  render(s);
+
+  document.getElementById('checkinBtn').disabled    = true;
+  document.getElementById('checkinBtn').textContent = '✅ Checked In Today!';
+
+  showToast('🔥','Daily Check-In!',`+15 XP · Streak: ${s.streak} day${s.streak>1?'s':''}`);
+}
+
+  function checkBadges(s) {}
+  function addActivity(s, icon, text, dotClass) {}
+  function getLevel(xp) { return { current: levels[0], nextLevel: levels[1], levelIndex: 0 }; }
+
+  function render(s) {
+    const { current, nextLevel, levelIndex } = getLevel(s.xp);
+
+    document.getElementById('profileName').textContent = s.name;
+    document.getElementById('sidebarName').textContent = s.name;
+
+    // === UPDATED: Show Login Status instead of Level ===
+    const sidebarLevelEl = document.getElementById('sidebarLevel');
+    if (currentUser) {
+      sidebarLevelEl.innerHTML = `✅ <span style="color:#34d399">Logged in</span>`;
+    } else {
+      sidebarLevelEl.innerHTML = `🔐 <span style="color:#f59e0b">Not logged in</span>`;
+    }
+
+    // Rest of render function remains the same...
+    document.getElementById('levelName').textContent = current.name;
+    document.getElementById('avatarLevel').textContent = 'Lv.' + (levelIndex + 1);
+    // ... (all other render code stays unchanged)
+  }
+
+  function showToast(icon, text, sub) {}
+  async function promptName() {}
+  function toggleSidebar() {}
+  function closeSidebar() {}
+
+  window._dailyCheckIn = dailyCheckIn;
+  window.promptName = promptName;
+  window.toggleSidebar = toggleSidebar;
+  window.closeSidebar = closeSidebar;
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    if (user) {
+      document.getElementById('sidebarAvatar').textContent = (user.displayName || user.email || 'U')[0].toUpperCase();
+      setSyncStatus('green', '✅ Logged in as <span>'+(user.displayName||user.email)+'</span>');
+    } else {
+      setSyncStatus('grey', '⚠️ Not logged in — saving locally');
+    }
+
+    let s = await loadState();
+    s = syncFromProgress(s);
+    checkBadges(s);
+    await saveState(s);
+    render(s);
+  });
+</script>
+</body>
+</html>

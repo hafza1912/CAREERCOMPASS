@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerCompass – Find Your Path</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── CSS VARIABLES — Light & Dark ── */
+    :root{
+      --primary:#059669;--primary-dark:#047857;
+      --sidebar-bg:#064e3b;
+      --bg:#f0fdf4;
+      --surface:#ffffff;
+      --border:#e5e7eb;
+      --border-green:#d1fae5;
+      --text:#1a1a1a;--text2:#6b7280;--text3:#4b7c6f;
+      --hero-from:#064e3b;--hero-to:#059669;
+      --stat-bg:#ffffff;--stat-border:#e5e7eb;
+      --card-bg:#ffffff;--card-border:#d1fae5;
+      --about-bg:linear-gradient(135deg,#ecfdf5,#d1fae5);
+      --topbar-bg:#ffffff;
+      --nav-text:#a7f3d0;
+    }
+    [data-theme="dark"]{
+      --bg:#0a0d14;
+      --surface:#0f1320;
+      --border:#1e2433;
+      --border-green:#1e4033;
+      --text:#e2e8f0;--text2:#64748b;--text3:#4b7c6f;
+      --hero-from:#041a0f;--hero-to:#053320;
+      --stat-bg:#0f1320;--stat-border:#1e2433;
+      --card-bg:#0f1320;--card-border:#1e2433;
+      --about-bg:linear-gradient(135deg,#0d2818,#0f1320);
+      --topbar-bg:#0f1320;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
+    .sidebar-logo{padding:16px 20px;font-size:1.15rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.1);cursor:pointer;}
+    .sidebar-logo span{color:#fff;}
+    .sidebar-scroll{flex:1;overflow-y:auto;padding:8px 10px;scrollbar-width:none;}
+    .sidebar-scroll::-webkit-scrollbar{display:none;}
+    .sidebar-section-label{font-size:0.62rem;font-weight:700;color:#6ee7b7;text-transform:uppercase;letter-spacing:1px;padding:12px 12px 6px;opacity:.75;}
+    .sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0 0 4px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;color:#a7f3d0;text-decoration:none;font-size:0.84rem;font-weight:500;transition:all .2s;}
+    .nav-item:hover{background:rgba(255,255,255,.1);color:#fff;}
+    .nav-item.active{background:#059669;color:#fff;font-weight:700;}
+    .nav-icon{width:20px;text-align:center;flex-shrink:0;}
+    .nav-badge{margin-left:auto;background:#059669;color:#fff;font-size:0.62rem;font-weight:700;padding:2px 6px;border-radius:8px;}
+    .nav-item.active .nav-badge{background:rgba(255,255,255,.25);}
+    .nav-divider{height:1px;background:rgba(255,255,255,.08);margin:6px 10px;}
+    .sidebar-bottom{padding:10px 10px 12px;border-top:1px solid rgba(255,255,255,.1);flex-shrink:0;background:var(--sidebar-bg);}
+    .sidebar-profile{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.07);cursor:pointer;margin-bottom:8px;transition:background .2s;}
+    .sidebar-profile:hover{background:rgba(255,255,255,.12);}
+    .profile-avatar{width:32px;height:32px;background:linear-gradient(135deg,#059669,#34d399);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:.9rem;flex-shrink:0;}
+    .profile-name{font-size:.78rem;font-weight:700;color:#fff;}
+    .profile-level{font-size:.65rem;color:#6ee7b7;margin-top:1px;}
+    .sidebar-login-btn{width:100%;background:#059669;color:#fff;border:none;padding:9px;border-radius:10px;font-weight:700;font-size:.78rem;cursor:pointer;transition:background .2s;}
+    .sidebar-login-btn:hover{background:#047857;}
+
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:0;left:240px;right:0;height:56px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s,border-color 0.3s;}
+    .topbar-left{display:flex;align-items:center;gap:12px;}
+    .topbar-title{font-weight:700;color:var(--primary);font-size:.95rem;font-family:'Space Grotesk',sans-serif;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .topbar-badge{display:flex;align-items:center;gap:5px;background:#ecfdf5;color:#059669;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:18px;border:1px solid #a7f3d0;}
+    [data-theme="dark"] .topbar-badge{background:#0d2818;border-color:#1e4033;}
+    .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
+
+    /* ── DARK MODE TOGGLE ── */
+    .theme-btn{background:none;border:1.5px solid var(--border-green);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .theme-btn:hover{background:var(--border-green);}
+
+    /* ── MAIN ── */
+    .main-content{margin-left:240px;margin-top:56px;flex:1;}
+
+    /* ── HERO ── */
+    .hero{background:linear-gradient(135deg,var(--hero-from) 0%,var(--hero-to) 100%);padding:64px 40px 56px;text-align:center;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+    .hero h1{font-size:2.5rem;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:14px;line-height:1.2;}
+    .hero h1 span{color:#6ee7b7;}
+    .hero p{font-size:1.05rem;color:#a7f3d0;max-width:560px;margin:0 auto 28px;line-height:1.65;}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{background:#fff;color:#059669;border:none;padding:13px 28px;border-radius:28px;font-weight:800;font-size:.95rem;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,0.15);}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.2);}
+    .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4);padding:13px 28px;border-radius:28px;font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+    .btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1);}
+
+    /* ── STATS ── */
+    .stats-bar{background:var(--stat-bg);border-bottom:1px solid var(--stat-border);padding:20px 40px;display:flex;justify-content:center;gap:48px;flex-wrap:wrap;transition:background 0.3s;}
+    .stat{text-align:center;}
+    .stat-num{font-size:1.6rem;font-weight:800;color:var(--primary);font-family:'Space Grotesk',sans-serif;}
+    .stat-label{font-size:.75rem;color:var(--text2);font-weight:500;margin-top:2px;}
+
+    /* ── SECTIONS ── */
+    .section{padding:44px 40px;}
+    .section-title{font-size:1.5rem;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:6px;}
+    .section-sub{color:var(--text2);font-size:.88rem;margin-bottom:24px;}
+
+    /* ── CARDS ── */
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+    .card{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:16px;padding:24px 20px;text-align:center;text-decoration:none;color:var(--text);transition:all .25s;cursor:pointer;display:block;}
+    .card:hover{border-color:#059669;transform:translateY(-4px);box-shadow:0 8px 24px rgba(5,150,105,.15);}
+    .card-emoji{font-size:2rem;margin-bottom:10px;}
+    .card-title{font-weight:800;color:var(--primary);font-size:.92rem;margin-bottom:5px;}
+    .card-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+
+    /* ── ABOUT STRIP ── */
+    .about-strip{background:var(--about-bg);padding:40px;margin:0 40px 40px;border-radius:20px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;border:1px solid var(--border-green);}
+    .about-text h2{font-size:1.3rem;font-weight:800;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:8px;}
+    .about-text p{color:var(--text3);font-size:.88rem;line-height:1.65;max-width:520px;}
+    .about-badge{background:#059669;color:#fff;padding:12px 24px;border-radius:12px;font-weight:800;font-size:.85rem;white-space:nowrap;flex-shrink:0;text-decoration:none;display:inline-block;transition:background 0.2s;}
+    .about-badge:hover{background:#047857;}
+
+    /* ── FOOTER ── */
+    footer{background:var(--sidebar-bg);padding:24px 40px;text-align:center;}
+    footer p{font-size:0.82rem;color:#6ee7b7;}
+    footer span{color:#a7f3d0;font-weight:700;}
+
+    /* ── OVERLAY ── */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150;}
+    .sidebar-overlay.open{display:block;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:700px){
+      .sidebar{transform:translateX(-100%);transition:transform .3s;z-index:300;}
+      .sidebar.open{transform:translateX(0);}
+      .topbar{left:0;}.main-content{margin-left:0;}
+      .hamburger{display:block;}
+      .hero{padding:44px 20px 40px;}.hero h1{font-size:1.8rem;}
+      .stats-bar{gap:24px;padding:16px;}.section{padding:32px 20px;}
+      .about-strip{margin:0 16px 32px;padding:28px 20px;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo" onclick="window.location.href='index.html'">🧭 Career<span>Compass</span></div>
+  <div class="sidebar-scroll">
+    <div class="sidebar-section-label">Main Menu</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a class="nav-item" href="roadmap.html"><span class="nav-icon">🗺️</span> Roadmap</a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">✅</span> Progress</a>
+      <a class="nav-item" href="resume.html"><span class="nav-icon">📄</span> Resume</a>
+      <a class="nav-item" href="compare.html"><span class="nav-icon">⚖️</span> Compare</a>
+    </nav>
+    <div class="nav-divider"></div>
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="gamify.html"><span class="nav-icon">🎮</span> My Profile</a>
+      <a class="nav-item" href="chatbot.html"><span class="nav-icon">🤖</span> AI Chat</a>
+      <a class="nav-item" href="buddy.html"><span class="nav-icon">🤝</span> Career Buddy</a>
+      <a class="nav-item" href="login.html"><span class="nav-icon">🔐</span> Login / Sign Up</a>
+    </nav>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-profile" onclick="window.location.href='gamify.html'">
+      <div class="profile-avatar" id="avatarInitial">S</div>
+      <div>
+        <div class="profile-name" id="profileName">Student</div>
+        <div class="profile-level" id="profileLevel">🏅 Login to sync data</div>
+      </div>
+    </div>
+    <button class="sidebar-login-btn" onclick="window.location.href='login.html'">🔐 Login to Save Progress</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-title">🧭 CareerCompass</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">🇮🇳 India-Focused</div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Navigate Your <span>Engineering Career</span><br>with Confidence</h1>
+    <p>India's most comprehensive career guide for engineering students — explore 50+ job roles, salary data, roadmaps, and personalized AI guidance.</p>
+    <div class="hero-btns">
+      <a href="Chatbot.html" class="btn-outline">🤖 Ask AI</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Career Paths</div></div>
+    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">Engineering Branches</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">India-Focused Data</div></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="section-title">Everything You Need</div>
+    <p class="section-sub">From exploring careers to building your resume — all in one place.</p>
+    <div class="cards-grid">
+      <a href="roadmap.html" class="card">
+        <div class="card-emoji">🗺️</div>
+        <div class="card-title">Learning Roadmap</div>
+        <div class="card-desc">Step-by-step skill roadmaps for Software Engineer, Data Scientist, GATE prep, and beyond.</div>
+      </a>
+      <a href="compare.html" class="card">
+        <div class="card-emoji">⚖️</div>
+        <div class="card-title">Compare Careers</div>
+        <div class="card-desc">Compare any two job roles or departments side-by-side — salary, scope, skills & demand.</div>
+      </a>
+      <a href="progress.html" class="card">
+        <div class="card-emoji">✅</div>
+        <div class="card-title">Track Progress</div>
+        <div class="card-desc">Log your milestones, certifications, and skill progress. Stay on track to your goal.</div>
+      </a>
+      <a href="resume.html" class="card">
+        <div class="card-emoji">📄</div>
+        <div class="card-title">Resume Builder</div>
+        <div class="card-desc">Build a clean ATS-friendly resume tailored to your chosen career path.</div>
+      </a>
+      <a href="chatbot.html" class="card">
+        <div class="card-emoji">🤖</div>
+        <div class="card-title">AI Career Chat</div>
+        <div class="card-desc">Ask CareerBot anything — salaries, GATE tips, placement advice, company culture, and more.</div>
+      </a>
+      <a href="buddy.html" class="card">
+        <div class="card-emoji">🤝</div>
+        <div class="card-title">Career Buddy</div>
+        <div class="card-desc">Get matched with a personalized career buddy based on your goals, skills & branch.</div>
+      </a>
+      <a href="gamify.html" class="card">
+        <div class="card-emoji">🎮</div>
+        <div class="card-title">Gamified Profile</div>
+        <div class="card-desc">Earn XP, badges, and level up as you complete your career milestones.</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 <span>CareerCompass</span> · Built for Engineering Students in India 🇮🇳</p>
+  </footer>
+
+</div><!-- end main-content -->
+
+<script>
+// ── DARK MODE ─────────────────────────────────────────────────
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('cc_theme', isDark ? 'light' : 'dark');
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('cc_theme');
+  if (saved === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️';
+  }
+})();
+
+// ── SIDEBAR ───────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ── SHOW USER NAME IF LOGGED IN ───────────────────────────────
+const userName  = localStorage.getItem('cc_user_name');
+const userEmail = localStorage.getItem('cc_user_email');
+if (userName || userEmail) {
+  const display = userName || userEmail;
+  document.getElementById('profileName').textContent  = display;
+  document.getElementById('avatarInitial').textContent = display[0].toUpperCase();
+  document.getElementById('profileLevel').textContent  = '✅ Logged in';
+}
+</script>
+</body>
+</html>
