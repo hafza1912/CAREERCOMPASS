@@ -20,7 +20,7 @@
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background 0.3s,color 0.3s;}
 
     /* SIDEBAR */
-    .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);}
+    .sidebar{width:240px;min-width:240px;background:var(--sidebar-bg);height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:200;box-shadow:4px 0 20px rgba(0,0,0,0.15);transition:transform 0.3s ease;}
     .sidebar-logo{padding:14px 20px 12px;font-size:1.1rem;font-weight:800;color:#a7f3d0;font-family:'Space Grotesk',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;flex-shrink:0;}
     .sidebar-logo span{color:#fff;}
     .sidebar-scroll{flex:1;overflow-y:auto;padding:8px 10px;scrollbar-width:none;}
@@ -44,7 +44,7 @@
     .sidebar-overlay.open{display:block;}
 
     /* TOPBAR */
-    .topbar{position:fixed;top:0;left:240px;right:0;height:52px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s;}
+    .topbar{position:fixed;top:0;left:240px;right:0;height:52px;background:var(--topbar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,0.05);transition:background 0.3s, left 0.3s ease;}
     .topbar-left{display:flex;align-items:center;gap:10px;}
     .topbar-title{font-weight:700;color:var(--primary);font-size:0.95rem;font-family:'Space Grotesk',sans-serif;}
     .topbar-sub{font-size:0.72rem;color:var(--text2);}
@@ -55,7 +55,7 @@
     .hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--primary);}
 
     /* MAIN */
-    .main-content{margin-left:240px;margin-top:52px;flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg);min-height:calc(100vh - 52px);}
+    .main-content{margin-left:240px;margin-top:52px;flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg);min-height:calc(100vh - 52px);transition:margin-left 0.3s ease;}
 
     /* AUTH CARD */
     .auth-card{background:var(--card-bg);border:1.5px solid var(--border-green);border-radius:22px;padding:36px 32px;width:100%;max-width:440px;box-shadow:0 8px 28px rgba(5,150,105,0.1);transition:background 0.3s;}
@@ -117,7 +117,7 @@
     [data-theme="dark"] .logout-btn:hover{background:#3d1010;}
 
     @media(max-width:700px){
-      .sidebar{transform:translateX(-100%);transition:transform 0.3s;z-index:300;}
+      .sidebar{transform:translateX(-100%);z-index:300;}
       .sidebar.open{transform:translateX(0);}
       .topbar{left:0;}.main-content{margin-left:0;}
       .hamburger{display:block;}
@@ -260,7 +260,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey:            "",
+  apiKey:            "AIzaSyD0KQIXnYg7pMDrQs_Ln3MR-_XNQAlO8uY",
   authDomain:        "careercompass-2add1.firebaseapp.com",
   projectId:         "careercompass-2add1",
   storageBucket:     "careercompass-2add1.firebasestorage.app",
@@ -373,7 +373,7 @@ window._doLogin = async function(){
   try{
     await signInWithEmailAndPassword(auth,email,pass);
     showMsg('✅ Login successful! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html',1200);
+    setTimeout(()=>window.location.href='index.html',1000);
   }catch(err){
     showMsg(getFriendlyError(err.code));
     btn.disabled=false; btn.textContent='🔐 Login to CareerCompass';
@@ -392,7 +392,7 @@ window._doSignup = async function(){
     const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await updateProfile(cred.user,{displayName:name});
     showMsg('✅ Account created! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html',1200);
+    setTimeout(()=>window.location.href='index.html',1000);
   }catch(err){
     showMsg(getFriendlyError(err.code));
     btn.disabled=false; btn.textContent='✨ Create Account';
@@ -404,7 +404,7 @@ window._googleLogin = async function(){
   try{
     await signInWithPopup(auth,provider);
     showMsg('✅ Google login successful! Redirecting...','success');
-    setTimeout(()=>window.location.href='index.html',1200);
+    setTimeout(()=>window.location.href='index.html',1000);
   }catch(err){
     if(err.code!=='auth/popup-closed-by-user') showMsg(getFriendlyError(err.code));
   }
@@ -416,7 +416,6 @@ window._doLogout = async function(){
     await signOut(auth);
     showMsg('✅ Logged out successfully.','success');
     showLoggedOut();
-    setTimeout(()=>window.location.href='index.html',1200);
   }catch(err){ showMsg('Logout failed. Please try again.'); }
 };
 
@@ -432,15 +431,16 @@ window._forgotPassword = async function(){
 // ── FRIENDLY ERRORS ───────────────────────────────────
 function getFriendlyError(code){
   const map={
-    'auth/user-not-found':       '❌ No account found with this email.',
-    'auth/wrong-password':       '❌ Incorrect password. Try again.',
-    'auth/invalid-email':        '❌ Invalid email address.',
-    'auth/email-already-in-use': '❌ Email already registered. Try logging in.',
-    'auth/weak-password':        '❌ Password too weak. Use 6+ characters.',
-    'auth/too-many-requests':    '❌ Too many attempts. Try again later.',
+    'auth/user-not-found':        '❌ No account found with this email.',
+    'auth/wrong-password':        '❌ Incorrect password. Try again.',
+    'auth/invalid-email':         '❌ Invalid email address.',
+    'auth/email-already-in-use':  '❌ Email already registered. Try logging in.',
+    'auth/weak-password':         '❌ Password too weak. Use 6+ characters.',
+    'auth/too-many-requests':     '❌ Too many attempts. Try again later.',
     'auth/network-request-failed':'❌ Network error. Check your connection.',
-    'auth/invalid-credential':   '❌ Incorrect email or password.',
-    'auth/popup-blocked':        '❌ Popup blocked. Allow popups for this site.',
+    'auth/invalid-credential':    '❌ Incorrect email or password.',
+    'auth/popup-blocked':         '❌ Popup blocked by browser. Allow popups for this site.',
+    'auth/unauthorized-domain':   '❌ Domain not authorized in Firebase Console.',
     'auth/cancelled-popup-request':'❌ Popup cancelled. Try again.',
   };
   return map[code]||'❌ Something went wrong. Please try again.';
