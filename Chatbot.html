@@ -320,96 +320,10 @@ if (userName) {
   document.getElementById('sidebarLevel').textContent  = '✅ Logged in';
 }
 
-// ── SYSTEM PROMPT ─────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are CareerBot AI, the official AI assistant of CareerCompass — a free career guidance website built for engineering students in India.
-
-You have two roles:
-1. Answer questions about CareerCompass website features and how to use them
-2. Answer career guidance questions for Indian engineering students
-
-════════════════════════════════
-CAREERCOMPASS WEBSITE GUIDE
-════════════════════════════════
-
-🏠 HOME PAGE (index.html)
-- Overview of the website with all features listed
-- Branch cards — click any branch to go to Explore Careers
-
-💼 EXPLORE CAREERS (careers.html)
-- Shows career paths for all engineering branches
-- Click a branch tab at the top (CSE, ECE, Mechanical, Civil, Chemical, Other)
-- Shows 4 tables: Core Careers, Non-Core Careers, Higher Studies, Government Jobs
-- Each table has: Role, Fresher Salary, Senior Salary, Demand, Top Companies, Scope
-
-🗺️ ROADMAP (roadmap.html)
-- Interactive career roadmap — click through 4 steps:
-  Step 1: Select Degree (B.E, Diploma, M.Tech)
-  Step 2: Select Department (CSE, ECE, AIDS, Cyber Security etc.)
-  Step 3: Select Job Role
-  Step 4: View full roadmap — Skills, Tools, Certs, Exams, Companies as clickable links
-
-✅ PROGRESS TRACKER (progress.html)
-- Select your target career from the dropdown and click "Load Tracker"
-- Tick tasks as you complete them — saved to cloud automatically
-- Shows total tasks, completed, remaining, and % progress bar
-- Categories: Foundation, Core Skills, Certifications, Placement Prep
-
-📄 RESUME GENERATOR (resume.html)
-- Fill in details: Name, Role, Email, Phone, LinkedIn, GitHub
-- Add Education, Internships, Projects, Skills, Certifications, Achievements
-- Click "Import from Progress Tracker" to auto-fill skills and certs
-- Click "Generate Resume Preview" — then "Print / Save as PDF"
-- Photo upload supported
-
-⚖️ COMPARE (compare.html)
-- Two modes: Compare Job Roles OR Compare Departments
-- Select 2 to 4 items and click "Compare"
-- Shows detailed side-by-side table with salary, scope, demand, WLB, skills, companies
-
-🎮 MY PROFILE (gamify.html)
-- Daily Check-In — +15 XP and streak increases
-- 7 Levels: Fresher → Intern → Junior Dev → Mid-Level → Senior Dev → Tech Lead → Architect
-- 9 Badges: First Step, On Fire, Week Warrior, Month Master, Cert Hunter, Explorer, Goal Crusher, Skill Builder, Resume Ready
-- Activity log, XP bar, week streak calendar
-
-🤝 CAREER BUDDY (buddy.html)
-- Set up your engineering profile (branch, domain, role, skills)
-- Click "Find My Buddies" to get matched by score
-- Chat with matched buddies, share a checklist, share GitHub/LeetCode/CAD links
-
-🔐 LOGIN (login.html)
-- Login or Sign Up with email and password or Google Sign-In
-- After login, data syncs to Firebase cloud across devices
-
-════════════════════════════════
-CAREER GUIDANCE EXPERTISE
-════════════════════════════════
-
-- Engineering careers in India (CSE, ECE, EEE, Mechanical, Civil, Chemical, AI&DS, Cyber, Aerospace)
-- Indian job market: salaries in LPA, demand, top companies
-- GATE exam prep, PSU recruitment (BHEL, NTPC, ONGC, ISRO, DRDO, HAL)
-- Campus placements, aptitude tests, coding rounds, interview prep
-- Higher studies: M.Tech at IIT/NIT, MBA at IIM, MS in USA/Germany
-- Certifications: AWS, Google, Microsoft, NPTEL, Coursera
-- Skills: DSA, programming languages, tools, frameworks
-- Career switches (e.g., Mechanical to IT, ECE to Software)
-- Resume building for freshers
-
-════════════════════════════════
-HOW TO RESPOND
-════════════════════════════════
-- If asked about a CareerCompass feature: explain clearly with step-by-step instructions and mention which page to go to
-- If asked a career question: give India-specific advice with salaries in LPA
-- Always be friendly, encouraging, and practical
-- Use emojis occasionally
-- Format with bullet points or bold when listing items
-- End with an encouraging note or a follow-up question`;
-
 // ── STATE ─────────────────────────────────────────────────────
-let conversationHistory = [];
 let isLoading = false;
 
-// ── SEND MESSAGE ──────────────────────────────────────────────
+// ── SEND MESSAGE (SIMULATED STATIC RESPONSE) ──────────────────
 async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text  = input.value.trim();
@@ -421,45 +335,22 @@ async function sendMessage() {
   input.style.height = 'auto';
   document.getElementById('charCount').textContent = '0 / 500';
 
-  conversationHistory.push({ role:'user', content:text });
-
   const typingId = showTyping();
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-  method:'POST',
-  headers:{
-    'Content-Type':'application/json',
-    'x-api-key':'YOUR_ANTHROPIC_API_KEY',
-    'anthropic-version': '2023-06-01',
-    'anthropic-dangerous-direct-browser-calls': 'true',
-  },
-      body: JSON.stringify({
-        model:   'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system:  SYSTEM_PROMPT,
-        messages: conversationHistory,
-      })
-    });
-    const data = await response.json();
+  // Simulate network delay to make the bot feel real
+  setTimeout(() => {
     removeTyping(typingId);
-    if (data.content && data.content[0]) {
-      const reply = data.content[0].text;
-      conversationHistory.push({ role:'assistant', content:reply });
-      addMessage('bot', reply);
-    } else {
-      addMessage('bot', '⚠️ Sorry, I could not get a response. Please try again!');
-    }
-  } catch(err) {
-    removeTyping(typingId);
-    addMessage('bot', '⚠️ Connection error. Please check your internet and try again.');
-  } finally {
+    
+    // STATIC HARDCODED RESPONSE
+    const reply = "It'll work in the future, but it is currently unavailable....";
+    addMessage('bot', reply);
+    
     isLoading = false;
     document.getElementById('sendBtn').disabled = false;
     document.getElementById('chatInput').focus();
-  }
+  }, 1200); // 1.2 second delay
 }
 
 // ── SUGGESTED QUESTION ────────────────────────────────────────
@@ -511,7 +402,6 @@ function removeTyping(id) { document.getElementById(id)?.remove(); }
 
 // ── CLEAR CHAT ────────────────────────────────────────────────
 function clearChat() {
-  conversationHistory = [];
   document.getElementById('messages').innerHTML = `
     <div class="welcome-area" id="welcomeArea">
       <div class="welcome-icon">🤖</div>
